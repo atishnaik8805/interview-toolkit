@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Interviewer's Toolkit</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #020617; --surface: #0f172a; --surface2: #1e293b;
+    --border: #1e293b; --border2: #334155;
+    --text: #e2e8f0; --muted: #94a3b8; --faint: #475569; --dim: #334155;
+    --blue: #3b82f6; --blue-bg: #1e3a5f; --blue-dim: #93c5fd;
+    --green: #22c55e; --green-bg: #14532d; --green-dim: #86efac;
+    --orange: #f97316; --red: #ef4444; --yellow: #eab308;
+    --purple: #6366f1; --pink: #f472b6; --cyan: #38bdf8;
+    --font: 'Sora', sans-serif; --mono: 'IBM Plex Mono', monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; }
+  button { cursor: pointer; font-family: var(--font); }
+  select, input, textarea { font-family: var(--font); }
+
+  /* Header */
+  .header { border-bottom: 1px solid var(--border); padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; position: sticky; top: 0; background: var(--bg); z-index: 100; }
+  .header-left { display: flex; flex-direction: column; gap: 2px; }
+  .header-eyebrow { display: flex; align-items: center; gap: 6px; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--purple); box-shadow: 0 0 8px var(--purple); }
+  .eyebrow-text { color: var(--faint); font-size: 9px; font-family: var(--mono); letter-spacing: 2px; text-transform: uppercase; }
+  .header h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.5px; }
+  .header-right { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+  /* Tab bar */
+  .tab-bar { display: flex; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 3px; }
+  .tab-btn { background: transparent; border: none; border-radius: 5px; color: var(--faint); font-family: var(--mono); font-size: 11px; padding: 5px 12px; transition: all 0.15s; }
+  .tab-btn.active { background: var(--surface2); color: var(--text); }
+
+  /* Layout */
+  .main { max-width: 960px; margin: 0 auto; padding: 20px; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* Cards */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 12px; }
+  .section-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+  .section-title { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+  .section-title-text { font-size: 11px; font-family: var(--mono); letter-spacing: 2px; text-transform: uppercase; font-weight: 700; }
+
+  /* Controls row */
+  .controls { display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; align-items: flex-end; }
+  .control-group label { display: block; color: var(--faint); font-size: 9px; font-family: var(--mono); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 5px; }
+  .toggle-group { display: flex; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 3px; }
+  .toggle-btn { background: transparent; border: none; border-radius: 5px; font-family: var(--mono); font-size: 11px; font-weight: 700; padding: 5px 14px; color: var(--faint); transition: all 0.15s; }
+  .toggle-btn.active-mca { background: var(--blue-bg); color: var(--blue-dim); }
+  .toggle-btn.active-mtech { background: var(--green-bg); color: var(--green-dim); }
+  select.styled { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 12px; padding: 7px 12px; outline: none; }
+
+  /* Subtabs */
+  .subtab-row { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 12px; scrollbar-width: none; }
+  .subtab-row::-webkit-scrollbar { display: none; }
+  .subtab-btn { display: flex; align-items: center; gap: 5px; white-space: nowrap; background: var(--surface); border: 1px solid var(--border); border-radius: 7px; color: var(--faint); font-family: var(--mono); font-size: 11px; padding: 6px 12px; transition: all 0.15s; }
+  .subtab-btn.active-mca { background: var(--blue-bg); border-color: var(--blue); color: var(--blue-dim); }
+  .subtab-btn.active-mtech { background: var(--green-bg); border-color: var(--green); color: var(--green-dim); }
+  .subtab-count { background: var(--surface2); color: var(--dim); border-radius: 4px; padding: 0 5px; font-size: 10px; font-weight: 700; }
+  .subtab-btn.active-mca .subtab-count { background: #1d4ed855; color: #fff; }
+  .subtab-btn.active-mtech .subtab-count { background: #15803d55; color: #fff; }
+
+  /* Question cards */
+  .q-card { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 8px; overflow: hidden; transition: all 0.2s; }
+  .q-card.asked { border-color: var(--blue); opacity: 0.7; }
+  .q-header { display: flex; align-items: flex-start; gap: 10px; padding: 11px 14px; cursor: pointer; }
+  .q-num { min-width: 22px; height: 22px; border-radius: 50%; background: var(--surface2); border: 1px solid var(--border2); color: var(--faint); display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 10px; font-weight: 700; flex-shrink: 0; cursor: pointer; transition: all 0.15s; }
+  .q-num.asked { background: var(--blue); border-color: var(--blue); color: white; }
+  .q-text { flex: 1; color: var(--text); font-size: 13px; font-weight: 600; line-height: 1.5; }
+  .q-arrow { color: var(--dim); font-size: 11px; flex-shrink: 0; margin-top: 2px; }
+  .q-body { border-top: 1px solid var(--border); padding: 12px 14px 14px 46px; display: none; }
+  .q-body.open { display: block; }
+  .q-label { color: var(--cyan); font-size: 9px; font-family: var(--mono); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 4px; }
+  .q-probe { color: #7dd3fc; font-size: 12px; font-style: italic; line-height: 1.6; margin-bottom: 10px; }
+  .show-answer-btn { display: flex; align-items: center; gap: 5px; background: var(--surface2); border: 1px solid var(--border2); border-radius: 6px; padding: 4px 10px; color: var(--faint); font-family: var(--mono); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; transition: all 0.15s; }
+  .show-answer-btn.open { background: var(--green-bg); border-color: var(--green); color: var(--green-dim); }
+  .answer-box { background: linear-gradient(135deg,#052e16,#0a2a1a); border: 1px solid #166534; border-radius: 8px; padding: 12px 14px; margin-bottom: 10px; display: none; }
+  .answer-box.open { display: block; }
+  .answer-label { color: #4ade80; font-size: 9px; font-family: var(--mono); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 5px; }
+  .answer-text { color: #bbf7d0; font-size: 12px; line-height: 1.7; }
+  .eval-note { background: var(--surface2); border-radius: 6px; padding: 8px 12px; }
+  .eval-note-label { color: var(--faint); font-size: 9px; font-family: var(--mono); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 3px; }
+  .eval-note-text { color: var(--muted); font-size: 12px; line-height: 1.5; }
+
+  /* Divider */
+  .level-divider { display: flex; align-items: center; gap: 8px; margin: 10px 0; }
+  .divider-line { flex: 1; height: 1px; }
+  .divider-label { font-size: 10px; font-family: var(--mono); color: #fff; border-radius: 4px; padding: 2px 8px; white-space: nowrap; }
+
+  /* Badges */
+  .badge-row { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+  .badge { border-radius: 4px; padding: 3px 10px; font-size: 10px; font-family: var(--mono); }
+
+  /* Score buttons */
+  .score-row { display: flex; gap: 5px; align-items: center; }
+  .score-btn { width: 30px; height: 30px; border-radius: 6px; border: 2px solid transparent; font-family: var(--mono); font-weight: 700; font-size: 12px; transition: all 0.15s; }
+
+  /* Candidate cards */
+  .cand-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 15px 16px; margin-bottom: 12px; }
+  .cand-top { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+  .cand-num { width: 26px; height: 26px; border-radius: 50%; background: var(--surface2); color: var(--faint); display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 11px; font-weight: 700; flex-shrink: 0; }
+  .cand-name { flex: 1; min-width: 120px; background: transparent; border: none; border-bottom: 1px solid var(--border2); color: var(--text); font-size: 14px; font-weight: 600; padding: 3px 0; outline: none; }
+  .score-total { display: flex; align-items: center; gap: 5px; background: var(--surface2); border-radius: 8px; padding: 4px 10px; }
+  .score-num { font-family: var(--mono); font-weight: 700; font-size: 17px; }
+  .score-max { color: var(--dim); font-family: var(--mono); font-size: 11px; }
+  .score-pct { border-radius: 4px; padding: 1px 6px; font-family: var(--mono); font-size: 10px; font-weight: 700; }
+  .params-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(185px,1fr)); gap: 10px; margin-bottom: 10px; }
+  .param-item label { display: block; color: var(--faint); font-size: 9px; font-family: var(--mono); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 5px; }
+  .cand-notes { width: 100%; background: var(--surface2); border: 1px solid var(--border2); border-radius: 8px; color: var(--muted); font-size: 12px; padding: 7px 10px; outline: none; resize: none; }
+  .add-btn { width: 100%; background: transparent; border: 1px dashed var(--border); border-radius: 12px; color: var(--dim); font-family: var(--mono); font-size: 12px; padding: 13px; transition: all 0.2s; }
+  .add-btn:hover { border-color: var(--border2); color: var(--faint); }
+  .del-btn { background: transparent; border: none; color: var(--dim); font-size: 15px; padding: 4px; }
+
+  /* GD Topic selector */
+  .topic-select { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-size: 13px; font-weight: 600; padding: 10px 14px; outline: none; }
+  .topic-card { border-radius: 12px; padding: 14px 16px; margin-bottom: 20px; display: flex; align-items: flex-start; gap: 12px; }
+  .topic-label { font-size: 9px; font-family: var(--mono); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 3px; }
+  .topic-text { font-size: 14px; font-weight: 600; line-height: 1.5; }
+  .topic-badge { border-radius: 4px; padding: 1px 7px; font-size: 9px; font-family: var(--mono); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-left: 8px; }
+
+  /* Devil cards */
+  .devil-panel { background: var(--surface); border: 1px solid #292524; border-radius: 12px; padding: 18px; margin-bottom: 20px; }
+  .timing-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+  .timing-chip { background: #292524; border: 1px solid #44403c; border-radius: 6px; padding: 3px 8px; color: #a8a29e; font-size: 11px; }
+  .devil-cards-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(280px,1fr)); gap: 10px; }
+  .devil-card { background: linear-gradient(135deg,#1c1917,#1a1614); border: 1px solid #44403c; border-radius: 10px; padding: 14px; }
+  .devil-tag { display: inline-block; border-radius: 5px; padding: 2px 8px; font-size: 9px; font-family: var(--mono); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+  .devil-when { color: #78716c; font-size: 10px; font-style: italic; margin-bottom: 7px; line-height: 1.5; }
+  .devil-prompt { color: #d6d3d1; font-size: 12px; line-height: 1.6; margin-bottom: 10px; }
+  .copy-btn { background: #1c1917; border: 1px solid #44403c; color: #78716c; border-radius: 5px; padding: 3px 10px; font-family: var(--mono); font-size: 10px; transition: all 0.2s; }
+  .copy-btn.copied { background: #166534; border-color: #16a34a; color: #86efac; }
+
+  /* Rankings */
+  .ranking-item { display: flex; align-items: center; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--border); }
+  .rank-bar-wrap { width: 80px; height: 4px; background: var(--surface2); border-radius: 2px; overflow: hidden; }
+  .rank-bar { height: 100%; border-radius: 2px; transition: width 0.4s; }
+
+  /* Guide */
+  .guide-row { display: flex; gap: 14px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .guide-row:last-child { border-bottom: none; }
+  .guide-step-num { color: var(--orange); font-size: 18px; font-family: var(--mono); font-weight: 700; min-width: 30px; flex-shrink: 0; }
+  .flag-box { border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; }
+  .flag-title { font-size: 10px; font-family: var(--mono); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 5px; }
+  .flag-item { font-size: 12px; line-height: 1.5; padding: 2px 0; }
+
+  /* Depth triggers */
+  .trigger-btn { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; color: var(--faint); font-size: 11px; padding: 5px 12px; transition: all 0.15s; margin: 3px; }
+  .trigger-btn.active { background: var(--blue-bg); border-color: var(--blue); color: var(--blue-dim); }
+
+  /* Misc */
+  .info-box { background: #0f1e36; border: 1px solid var(--blue-bg); border-radius: 10px; padding: 10px 14px; margin-bottom: 16px; display: flex; gap: 10px; align-items: flex-start; }
+  .export-btn { background: #0f4c81; border: 1px solid #1d6fa8; color: #7dd3fc; border-radius: 8px; padding: 7px 14px; font-family: var(--mono); font-size: 11px; }
+  .score-legend { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+  .legend-item { display: flex; align-items: center; gap: 4px; }
+  .legend-dot { width: 9px; height: 9px; border-radius: 2px; }
+  .legend-text { color: var(--faint); font-family: var(--mono); font-size: 10px; }
+  hr.divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+</style>
+</head>
+<body>
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <div class="header-eyebrow"><div class="dot"></div><span class="eyebrow-text">Interviewer's Toolkit</span></div>
+    <h1>Interview Command Centre</h1>
+  </div>
+  <div class="header-right">
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('gd')">🗣️ GD</button>
+      <button class="tab-btn" onclick="switchTab('tech')">💻 Technical</button>
+      <button class="tab-btn" onclick="switchTab('guide')">📖 Guide</button>
+    </div>
+    <button class="export-btn" onclick="exportCSV()">↓ CSV</button>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- ═══════════════════════════════════════ GD TAB ═══════════════════════════════════════ -->
+<div id="tab-gd" class="tab-content active">
+
+  <!-- Controls -->
+  <div class="controls">
+    <div class="control-group">
+      <label>GD Topic</label>
+      <select class="styled topic-select" id="gd-topic-select" onchange="onTopicChange()" style="min-width:280px;max-width:520px;">
+        <optgroup label="── General Topics">
+          <option value="0">1. Will Artificial Intelligence Create More Jobs Than It Destroys?</option>
+          <option value="1">2. Automation vs Human Skills – What Will Define the Future Workplace?</option>
+          <option value="2">3. Cryptocurrency in India: The Future of Finance or a Risky Gamble?</option>
+          <option value="3">4. Is India Ready for a 100% Cashless Economy?</option>
+          <option value="4">5. Reservation in Jobs and Education: Leveling the Field or Impacting Merit?</option>
+          <option value="5">6. The Rise of Remote Work: A Sustainable Trend or a Temporary Phase?</option>
+          <option value="6">7. Social Media: A Tool for Awareness or a Source of Misinformation?</option>
+          <option value="7">8. Is ChatGPT and Generative AI a Threat to Traditional Jobs?</option>
+        </optgroup>
+        <optgroup label="── MCA / MTech Topics">
+          <option value="8">9. Should Software Engineers Be Legally Liable for Bugs That Cause Harm?</option>
+          <option value="9">10. Open Source vs Proprietary Software: Which Model Is Better for India's Digital Growth?</option>
+          <option value="10">11. Should AI Systems Be Required to Explain Their Decisions?</option>
+          <option value="11">12. Is India's Digital Personal Data Protection Act Enough to Protect Citizens?</option>
+          <option value="12">13. Should Companies Be Allowed to Monetise User Data Even With Consent?</option>
+          <option value="13">14. Is India Producing Enough Quality Engineers, or Just Quantity?</option>
+          <option value="14">15. Should Coding Be Made Mandatory in Indian School Curriculum?</option>
+          <option value="15">16. Startups vs Government Jobs: Which Path Creates More Value for India?</option>
+          <option value="16">17. Is Quantum Computing a Realistic Near-Term Threat to Current Encryption Standards?</option>
+          <option value="17">18. Should Self-Driving Vehicles Be Allowed on Indian Roads by 2030?</option>
+          <option value="18">19. Web3 and Decentralisation: Genuine Innovation or Overhyped Technology?</option>
+          <option value="19">20. Is a 4-Day Work Week Practical for the Indian IT Industry?</option>
+          <option value="20">21. Should Big Tech Companies Be Broken Up to Prevent Monopoly?</option>
+          <option value="21">22. Moonlighting in IT: Employee Right or Breach of Trust?</option>
+        </optgroup>
+      </select>
+    </div>
+    <div class="control-group">
+      <label>Date</label>
+      <input type="date" id="gd-date" class="styled" style="padding:7px 10px;">
+    </div>
+    <button class="tab-btn" id="devil-toggle" onclick="toggleDevil()" style="border:1px solid #44403c;color:#a8a29e;padding:7px 14px;border-radius:8px;">😈 Cards</button>
+    <button class="tab-btn" id="rank-toggle" onclick="toggleRank()" style="border:1px solid var(--border2);color:var(--faint);padding:7px 14px;border-radius:8px;">▸ Rankings</button>
+  </div>
+
+  <!-- Topic card -->
+  <div id="gd-topic-card" class="topic-card" style="background:linear-gradient(135deg,#0f172a,#1e1b4b);border:1px solid #312e81;"></div>
+
+  <!-- Score legend -->
+  <div class="score-legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#22c55e"></div><span class="legend-text">5=Excellent</span></div>
+    <div class="legend-item"><div class="legend-dot" style="background:#84cc16"></div><span class="legend-text">4=Good</span></div>
+    <div class="legend-item"><div class="legend-dot" style="background:#eab308"></div><span class="legend-text">3=Average</span></div>
+    <div class="legend-item"><div class="legend-dot" style="background:#f97316"></div><span class="legend-text">2=Below Avg</span></div>
+    <div class="legend-item"><div class="legend-dot" style="background:#ef4444"></div><span class="legend-text">1=Poor</span></div>
+  </div>
+
+  <!-- Rankings -->
+  <div id="rank-panel" style="display:none;margin-bottom:16px;" class="section-card">
+    <div class="section-title"><span>🏆</span><span class="section-title-text" style="color:var(--yellow)">Rankings</span></div>
+    <div id="rank-list"></div>
+  </div>
+
+  <!-- Devil cards -->
+  <div id="devil-panel" style="display:none;" class="devil-panel">
+    <div class="section-title"><span>😈</span><span class="section-title-text" style="color:var(--orange)">Devil's Advocate Cards</span></div>
+    <div style="color:var(--faint);font-size:11px;margin-bottom:12px;line-height:1.6;">Play after 5–6 mins of consensus. Say: <em style="color:var(--muted)">"Interesting — how would the group respond to this view?"</em> then go silent.</div>
+    <div style="background:#1c1917;border:1px solid #292524;border-radius:8px;padding:10px 14px;margin-bottom:12px;">
+      <div style="color:#78716c;font-size:9px;font-family:var(--mono);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:7px;">Play the card when you see…</div>
+      <div class="timing-row">
+        <span class="timing-chip">⚡ Same point repeated by multiple people</span>
+        <span class="timing-chip">⚡ Everyone nodding — no critical response</span>
+        <span class="timing-chip">⚡ No counter-position after 5+ minutes</span>
+        <span class="timing-chip">⚡ Energy dropping — shorter sentences, longer pauses</span>
+        <span class="timing-chip">⚡ One speaker has clearly 'won the room'</span>
+      </div>
+    </div>
+    <div id="devil-cards-grid" class="devil-cards-grid"></div>
+  </div>
+
+  <!-- GD Candidates -->
+  <div id="gd-candidates"></div>
+  <button class="add-btn" onclick="addGDCandidate()">+ Add Candidate</button>
+</div>
+
+<!-- ═══════════════════════════════════════ TECH TAB ═══════════════════════════════════════ -->
+<div id="tab-tech" class="tab-content">
+
+  <!-- Controls -->
+  <div class="controls">
+    <div class="control-group">
+      <label>Degree</label>
+      <div class="toggle-group">
+        <button class="toggle-btn active-mca" id="deg-mca" onclick="setDegree('MCA')">MCA</button>
+        <button class="toggle-btn" id="deg-mtech" onclick="setDegree('MTech')">MTech</button>
+      </div>
+    </div>
+    <div class="control-group">
+      <label>College</label>
+      <select class="styled" id="college-select" onchange="onCollegeChange()">
+        <option>PES University</option>
+        <option>MS Ramaiah</option>
+        <option>Jain University</option>
+        <option>BNMIT</option>
+      </select>
+    </div>
+    <div class="control-group">
+      <label>Date</label>
+      <input type="date" id="tech-date" class="styled" style="padding:7px 10px;">
+    </div>
+  </div>
+
+  <!-- College tip -->
+  <div class="info-box" id="college-tip">
+    <span style="font-size:14px">🎓</span>
+    <div>
+      <div style="color:var(--cyan);font-size:9px;font-family:var(--mono);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:3px;" id="college-tip-title"></div>
+      <div style="color:#7dd3fc;font-size:12px;line-height:1.6;" id="college-tip-text"></div>
+    </div>
+  </div>
+
+  <!-- Phase tabs -->
+  <div class="subtab-row" id="phase-tabs">
+    <button class="subtab-btn active-mca" onclick="setPhase('warmup')">🌡️ Warm Up <span class="subtab-count" style="margin-left:4px">5 min</span></button>
+    <button class="subtab-btn" onclick="setPhase('fundamentals')">📐 Fundamentals <span class="subtab-count" style="margin-left:4px">15 min</span></button>
+    <button class="subtab-btn" onclick="setPhase('coding')">💻 Coding <span class="subtab-count" style="margin-left:4px">15 min</span></button>
+    <button class="subtab-btn" onclick="setPhase('depth')">🔬 Depth Probe <span class="subtab-count" style="margin-left:4px">7 min</span></button>
+    <button class="subtab-btn" onclick="setPhase('closing')">🎤 Closing <span class="subtab-count" style="margin-left:4px">3 min</span></button>
+  </div>
+
+  <!-- Phase label -->
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+    <div id="phase-label" style="color:var(--text);font-size:14px;font-weight:700;"></div>
+    <div style="color:var(--dim);font-size:10px;font-family:var(--mono);">click number to mark asked · click row to expand</div>
+  </div>
+
+  <!-- Questions panel -->
+  <div id="questions-panel"></div>
+
+  <hr class="divider">
+
+  <!-- Tech Candidates -->
+  <div style="color:var(--faint);font-size:10px;font-family:var(--mono);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:14px;">Candidate Evaluation</div>
+  <div class="score-legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#22c55e"></div><span class="legend-text">5=Excellent</span></div>
+    <div class="legend-item"><div class="legend-dot" style="background:#84cc16"></div><span class="legend-text">4=Good</span></div>
+    <div class="legend-item"><div class="legend-dot" style="background:#eab308"></div><span class="legend-text">3=Average</span></div>
+    <div class="legend-item"><div class="legend-dot" style="background:#f97316"></div><span class="legend-text">2=Below Avg</span></div>
+    <div class="legend-item"><div class="legend-dot" style="background:#ef4444"></div><span class="legend-text">1=Poor</span></div>
+  </div>
+  <div id="tech-candidates"></div>
+  <button class="add-btn" onclick="addTechCandidate()">+ Add Candidate</button>
+</div>
+
+<!-- ═══════════════════════════════════════ GUIDE TAB ═══════════════════════════════════════ -->
+<div id="tab-guide" class="tab-content">
+  <div id="guide-content"></div>
+</div>
+
+</div><!-- /main -->
+
+<script>
+// ══════════════════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════════════════
+
+const GD_TOPICS = [
+  "Will Artificial Intelligence Create More Jobs Than It Destroys?",
+  "Automation vs Human Skills – What Will Define the Future Workplace?",
+  "Cryptocurrency in India: The Future of Finance or a Risky Gamble?",
+  "Is India Ready for a 100% Cashless Economy?",
+  "Reservation in Jobs and Education: Leveling the Field or Impacting Merit?",
+  "The Rise of Remote Work: A Sustainable Trend or a Temporary Phase?",
+  "Social Media: A Tool for Awareness or a Source of Misinformation?",
+  "Is ChatGPT and Generative AI a Threat to Traditional Jobs?",
+  "Should Software Engineers Be Legally Liable for Bugs That Cause Harm?",
+  "Open Source vs Proprietary Software: Which Model Is Better for India's Digital Growth?",
+  "Should AI Systems Be Required to Explain Their Decisions?",
+  "Is India's Digital Personal Data Protection Act Enough to Protect Citizens?",
+  "Should Companies Be Allowed to Monetise User Data Even With Consent?",
+  "Is India Producing Enough Quality Engineers, or Just Quantity?",
+  "Should Coding Be Made Mandatory in Indian School Curriculum?",
+  "Startups vs Government Jobs: Which Path Creates More Value for India?",
+  "Is Quantum Computing a Realistic Near-Term Threat to Current Encryption Standards?",
+  "Should Self-Driving Vehicles Be Allowed on Indian Roads by 2030?",
+  "Web3 and Decentralisation: Genuine Innovation or Overhyped Technology?",
+  "Is a 4-Day Work Week Practical for the Indian IT Industry?",
+  "Should Big Tech Companies Be Broken Up to Prevent Monopoly?",
+  "Moonlighting in IT: Employee Right or Breach of Trust?"
+];
+
+const DEVIL_CARDS = [
+  {topic:0,cards:[
+    {when:"Everyone says AI destroys jobs",prompt:"The World Economic Forum estimates AI will create 97 million new jobs — more than it displaces. If every industrial revolution ultimately created more employment, why should AI be any different?",pro:true},
+    {when:"Everyone is optimistic about job creation",prompt:"Entire professions — data entry, radiology screening, paralegal research — are already being automated at scale with no equivalent replacements emerging. What makes this time different from past technological shifts?",pro:false}
+  ]},
+  {topic:1,cards:[
+    {when:"Group says human skills will always win",prompt:"Empathy, creativity, and ethical judgment — skills considered uniquely human — are now being replicated by AI in therapy, art, and legal decisions. Is the 'human skills' argument just wishful thinking?",pro:true},
+    {when:"Group is pessimistic about human adaptability",prompt:"Countries that invested in reskilling workers during automation — like Germany with its vocational training model — maintained low unemployment. Is the real issue automation itself, or just poor policy response?",pro:false}
+  ]},
+  {topic:2,cards:[
+    {when:"Everyone agrees crypto is too risky",prompt:"El Salvador made Bitcoin legal tender and saw significant GDP growth from remittances alone. If a developing nation can benefit, why is India's hesitation justified?",pro:true},
+    {when:"Everyone is pro-crypto",prompt:"India lost over ₹1,000 crore to crypto scams in 2023 alone, with no regulatory body able to recover funds. In a country where financial literacy is still developing, isn't protecting retail investors more important than innovation?",pro:false}
+  ]},
+  {topic:3,cards:[
+    {when:"Group says India isn't ready",prompt:"UPI processes over 10 billion transactions a month and reaches tier-3 cities. If adoption has happened organically without mandates, hasn't India already proven it's ready?",pro:true},
+    {when:"Group says India is ready",prompt:"40% of India's workforce is in agriculture and informal labour — paid daily in cash, with no smartphones or reliable internet. A cashless mandate would effectively exclude them from the economy entirely.",pro:false}
+  ]},
+  {topic:4,cards:[
+    {when:"Group is against reservation",prompt:"Countries like the US with affirmative action and South Africa with BEE policies have seen measurable reduction in institutional inequality. Without structural intervention, does meritocracy just preserve existing privilege?",pro:true},
+    {when:"Group is fully pro-reservation",prompt:"Second and third generation beneficiaries from families that have already achieved economic mobility continue to access quotas, while first-generation underprivileged candidates from unreserved categories get no support. Has the policy outlived its original intent?",pro:false}
+  ]},
+  {topic:5,cards:[
+    {when:"Group says remote work is unsustainable",prompt:"Microsoft and Spotify's internal data shows remote employees are equally or more productive, with significantly higher retention rates. If output is the same and costs are lower, what is the actual business case against remote work?",pro:true},
+    {when:"Group is fully pro-remote work",prompt:"Junior employees hired remotely during COVID reported significantly lower career growth, mentorship access, and promotion rates compared to in-office peers. Does remote work widen the opportunity gap for those early in their careers?",pro:false}
+  ]},
+  {topic:6,cards:[
+    {when:"Group is focused on misinformation harms",prompt:"The Arab Spring, #MeToo, and India's farmers' protests all gained unstoppable momentum through social media. Without it, these movements may never have reached critical mass. Can any other medium claim that kind of democratic impact?",pro:true},
+    {when:"Group praises social media uncritically",prompt:"MIT research found false news spreads six times faster than true news on Twitter. If the primary function of a medium is now to amplify falsehood, does its occasional social good justify the structural damage?",pro:false}
+  ]},
+  {topic:7,cards:[
+    {when:"Everyone says GenAI is a serious threat",prompt:"Every programmer today uses AI coding assistants, yet software engineering job postings have increased 25% year-on-year. If the most automatable knowledge workers are thriving, who exactly is the threat for?",pro:true},
+    {when:"Group downplays GenAI's impact",prompt:"Hollywood writers went on strike specifically because studios wanted to replace them with AI scripts. If even creative professionals feel directly threatened enough to strike, is dismissing the threat just wishful thinking?",pro:false}
+  ]},
+  {topic:8,cards:[
+    {when:"Group says engineers should not be liable",prompt:"Doctors and architects are legally liable when their professional errors cause harm — even unintentional ones. If software now powers hospitals, aircraft, and financial systems, why should engineers be exempt from the same standard of accountability?",pro:true},
+    {when:"Group says engineers should be fully liable",prompt:"Software operates under layers of management, business pressure, and deadlines. Holding individual engineers liable for systemic failures caused by organizational decisions would destroy the profession — who would take on high-stakes projects knowing personal prosecution awaits?",pro:false}
+  ]},
+  {topic:9,cards:[
+    {when:"Group strongly favors open source",prompt:"India's most successful digital infrastructure — UPI, Aadhaar, CoWIN — was built on proprietary and closed systems. If open source were clearly superior, why did India's own government choose otherwise for its most critical platforms?",pro:true},
+    {when:"Group favors proprietary software",prompt:"Linux powers over 90% of the world's cloud infrastructure, and India's IT industry runs almost entirely on open source stacks. Without open source, Indian engineers would be paying Western companies for every tool they use — how is that a path to digital sovereignty?",pro:false}
+  ]},
+  {topic:10,cards:[
+    {when:"Group strongly supports explainability",prompt:"The most accurate AI models — deep neural networks used in cancer detection and fraud prevention — are inherently unexplainable. Mandating explainability could force us to use inferior, less accurate models. Are we willing to trade lives for transparency?",pro:true},
+    {when:"Group opposes mandatory explainability",prompt:"AI systems are already denying people loans, bail, and job interviews with no explanation required. When a human officer makes such a decision, they must justify it. Why should an algorithm have less accountability than a person?",pro:false}
+  ]},
+  {topic:11,cards:[
+    {when:"Group says the DPDP Act is sufficient",prompt:"The DPDP Act exempts the government from its own data protection rules and gives the central government broad powers to waive obligations for any entity. If the regulator is exempt from the law it enforces, can it truly be called protection?",pro:true},
+    {when:"Group says the DPDP Act is inadequate",prompt:"India had zero comprehensive data protection law for decades. The DPDP Act at minimum establishes consent requirements, data localisation principles, and grievance mechanisms. Isn't an imperfect framework still vastly better than the complete absence of one?",pro:false}
+  ]},
+  {topic:12,cards:[
+    {when:"Group says consent makes it acceptable",prompt:"Consent for data use is typically buried in thousands of words of legal text that 99% of users never read. If consent is structurally manufactured rather than genuinely informed, does clicking 'I agree' actually mean anything meaningful?",pro:true},
+    {when:"Group says data monetisation should be banned",prompt:"Google Maps, Gmail, and WhatsApp — all free, all data-funded — are used by over 500 million Indians who could not afford paid alternatives. If we eliminate data monetisation, who pays for the free digital infrastructure that the majority of India depends on?",pro:false}
+  ]},
+  {topic:13,cards:[
+    {when:"Group says India lacks quality",prompt:"Indian engineers lead engineering teams at Google, Microsoft, Adobe, and IBM. India produces more engineers hired by global tech giants than any other country. If quality were truly lacking, why do the world's most demanding companies keep hiring from here?",pro:true},
+    {when:"Group defends Indian engineering quality",prompt:"NASSCOM data shows that less than 20% of Indian engineering graduates are directly employable without additional training. Companies spend crores reskilling fresh hires on basics. If a degree doesn't make someone job-ready, what exactly are four years of engineering producing?",pro:false}
+  ]},
+  {topic:14,cards:[
+    {when:"Group strongly supports mandatory coding",prompt:"Finland introduced mandatory coding in schools in 2016 but has since scaled it back, finding that computational thinking — not syntax — was what actually mattered. Are we solving the right problem by teaching children to code, or just creating a generation of mediocre programmers?",pro:true},
+    {when:"Group opposes mandatory coding",prompt:"India's digital economy needs millions of technically literate citizens, not just a few elite coders. Just as we teach everyone to read without expecting everyone to become authors, teaching coding basics builds the digital fluency that every future citizen will need regardless of profession.",pro:false}
+  ]},
+  {topic:15,cards:[
+    {when:"Group strongly favors startups",prompt:"Of India's 100,000+ registered startups, fewer than 100 have become profitable unicorns. The rest either shut down or stagnate. Meanwhile government engineers built ISRO's Mars mission at a fraction of NASA's cost. Is startup culture creating real value, or just burning investor capital?",pro:true},
+    {when:"Group strongly favors government jobs",prompt:"India's entire startup ecosystem — Flipkart, Zomato, Paytm, Ola — has created millions of jobs, transformed logistics, payments, and food delivery, and put India on the global tech map. No government department has achieved that kind of economic transformation in the same timeframe.",pro:false}
+  ]},
+  {topic:16,cards:[
+    {when:"Group says quantum is an imminent threat",prompt:"Current quantum computers operate at under 1,000 stable qubits with high error rates. Breaking RSA-2048 encryption would require millions of error-corrected qubits — something no lab is close to achieving. Is calling this a near-term threat based on science, or just hype?",pro:true},
+    {when:"Group dismisses quantum as a distant concern",prompt:"Nation-state actors are already harvesting encrypted data today under a 'store now, decrypt later' strategy — waiting for quantum capability to mature. If your encrypted data from 2024 can be decrypted in 2034, the threat is already active even if the decryption hasn't happened yet.",pro:false}
+  ]},
+  {topic:17,cards:[
+    {when:"Group opposes self-driving on Indian roads",prompt:"India has some of the highest road fatality rates in the world — over 150,000 deaths annually — almost all caused by human error. If autonomous vehicles can reduce even 30% of that, the moral case for deployment outweighs the edge-case risks of algorithmic failure.",pro:true},
+    {when:"Group supports self-driving by 2030",prompt:"Indian roads involve cattle, autorickshaws, sudden lane changes, unmarked speed breakers, and monsoon flooding — conditions that have no equivalent in the US or Germany where these systems were trained. Deploying systems that cannot handle Indian road chaos is not innovation, it is recklessness.",pro:false}
+  ]},
+  {topic:18,cards:[
+    {when:"Group says Web3 is overhyped",prompt:"Decentralised finance has enabled cross-border transactions for millions in countries with broken banking systems — El Salvador, Nigeria, Ukraine during wartime. The use cases are real even if the speculation around NFTs and metaverse was not. Are we judging the technology by its worst applications?",pro:true},
+    {when:"Group is enthusiastic about Web3",prompt:"Most Web3 applications today still run on centralised cloud infrastructure — AWS, Google Cloud — and most users access them through centralised exchanges. If the decentralisation is mostly cosmetic and the speculation has wiped out billions in retail investor savings, what exactly has Web3 delivered beyond a new vocabulary?",pro:false}
+  ]},
+  {topic:19,cards:[
+    {when:"Group says 4-day week is not practical",prompt:"Microsoft Japan ran a 4-day work week trial and reported a 40% productivity increase. Iceland's nationwide trial across government and private sectors showed maintained output with dramatically lower burnout. If productivity does not drop, what is the actual argument against it?",pro:true},
+    {when:"Group strongly supports 4-day week",prompt:"Indian IT operates in global delivery models with US, UK, and European clients across time zones — many projects require 24/7 coverage and overlap hours. A 4-day week works for a product company with full schedule control. Does it work for a services industry where the client sets the calendar?",pro:false}
+  ]},
+  {topic:20,cards:[
+    {when:"Group supports breaking up big tech",prompt:"Google, despite its dominance, has faced over 50 serious competitors in search, maps, and cloud — and consistently outcompeted them on merit. Breaking up a company that wins through better products punishes success rather than protecting competition. Has antitrust law kept up with how tech markets actually work?",pro:true},
+    {when:"Group opposes breaking up big tech",prompt:"Google controls 92% of global search, Meta owns the top 3 social platforms, and Apple controls what apps a billion users can install. When a single company controls the information infrastructure of entire populations, is this still a market — or is it something closer to a utility that needs regulation like one?",pro:false}
+  ]},
+  {topic:21,cards:[
+    {when:"Group says moonlighting is a breach of trust",prompt:"A developer working two full-time jobs is either giving 100% to both — which is physiologically impossible — or giving 50% to each. If an employer is paying for full commitment and getting half, isn't that straightforwardly a performance and integrity issue regardless of what we call it?",pro:true},
+    {when:"Group defends moonlighting as an employee right",prompt:"Wipro fired 300 employees for moonlighting while simultaneously laying off thousands citing 'business restructuring.' If companies feel no obligation of loyalty downward, on what moral basis do they demand exclusive loyalty upward? Is this about ethics, or about control?",pro:false}
+  ]}
+];
+
+const GD_PARAMS = [
+  {key:'content',label:'Content Quality',desc:'Facts, data, depth of knowledge'},
+  {key:'communication',label:'Communication',desc:'Clarity, conciseness, articulation'},
+  {key:'groupDynamics',label:'Group Dynamics',desc:'Listening, building on others'},
+  {key:'leadership',label:'Leadership',desc:'Moving discussion forward, summarising'},
+  {key:'adaptability',label:'Adaptability',desc:'Openness to counter-arguments'}
+];
+
+const SCORE_COLORS = {5:'#22c55e',4:'#84cc16',3:'#eab308',2:'#f97316',1:'#ef4444'};
+const SCORE_LABELS = {5:'Excellent',4:'Good',3:'Average',2:'Below Avg',1:'Poor'};
+const COLLEGE_NOTES = {
+  'PES University':'Strong DSA fundamentals — go straight to medium-hard problems. Push on complexity analysis. They are used to being challenged.',
+  'MS Ramaiah':'Good systems understanding, especially MTech. Probe deeper on OS and DBMS. Concurrency and networking are strong areas.',
+  'Jain University':'Mixed quality — start at Safe level for every topic. Let them earn harder questions. Focus on project depth first.',
+  'BNMIT':'Same approach as Jain — start safe, probe project depth first. Watch for candidates who compensate for weak theory with strong project work.'
+};
+
+const TECH_PARAMS = [
+  {key:'problemSolving',label:'Problem Solving',desc:'Approach, breakdown, handling being stuck'},
+  {key:'fundamentals',label:'CS Fundamentals',desc:'Clarity on core concepts, not just definitions'},
+  {key:'communication',label:'Communication',desc:'Clarity of explanation, structured answers'},
+  {key:'learnability',label:'Learnability',desc:'Projects beyond curriculum, curious questions'},
+  {key:'attitude',label:'Attitude',desc:'Handles pressure, accepts correction, self-aware'}
+];
+
+</script>
+<script>
+// ══════════════════════════════════════════════════════════
+// TECH QUESTIONS DATA
+// ══════════════════════════════════════════════════════════
+const TECH_Q = {
+  warmup: [
+    {q:"Walk me through your final year project in 2 minutes.",probe:"What was the hardest technical problem you faced and how did you solve it?",flag:"Can they explain their own work clearly? Red flag: vague or just lists technologies.",answer:"No fixed answer — listen for: clear problem statement, their role, tech used with reason, and outcome. Strong answer flows like a story: problem → approach → challenges → result."},
+    {q:"Why did you choose this tech stack for your project?",probe:"What alternatives did you consider?",flag:"Green flag: deliberate choice. Red flag: 'My professor told me to.'",answer:"Ideal answer shows deliberate reasoning. Red flag: 'Because everyone uses it' or 'My professor suggested it' — no independent thinking."},
+    {q:"If you could redo your project, what would you change technically?",probe:"What did you learn that you didn't know at the start?",flag:"Self-awareness signal. Strong candidates identify real technical debt.",answer:"Strong candidates identify concrete technical debt. Red flag: 'I wouldn't change anything' — shows no reflection."},
+    {q:"What is one feature you wanted to build but couldn't? Why not?",probe:"How would you approach building it now with more time?",flag:"Reveals ambition and scope awareness.",answer:"Look for candidates who had genuine stretch goals and can articulate why they couldn't achieve them (time, knowledge gap, complexity)."},
+    {q:"How did you test your project? Did you write any tests?",probe:"What would break first if someone used your project with unexpected input?",flag:"Most freshers skip testing. Awareness of edge cases is a strong green flag.",answer:"Most freshers say manual testing only — acceptable but note it. Green flag: wrote unit tests, knows JUnit/pytest, can identify edge cases."},
+    {q:"Did you work alone or in a team? What was your specific contribution?",probe:"What was the most difficult part of collaborating technically?",flag:"Watch for candidates who claim everything vs those who clearly own their part.",answer:"Strong candidates clearly own a module. Red flag: vague credit-claiming ('We all worked on everything')."}
+  ],
+  topics: [
+    {name:"OOP",icon:"🧩",safe:[
+      {q:"Explain polymorphism with a real-world example — not a code example.",probe:"Can you give a second example from a different domain?",flag:"Tests conceptual understanding, not memorised code.",answer:"Same action, different behaviour depending on the object. E.g. 'make sound' on Dog = barking, Cat = meowing. Or: UPI/credit card/cash all 'process payment' differently but you call the same action."},
+      {q:"What is encapsulation and why does it matter in large codebases?",probe:"What happens when you break encapsulation?",flag:"Look for practical reasoning, not textbook definition.",answer:"Hiding internal state, exposing only what's needed via methods. In large codebases: prevents uncontrolled changes. If 10 classes directly access a field and you change its type, all 10 break. With encapsulation, only the getter/setter needs updating."},
+      {q:"What is inheritance? Can you give an example where it's the WRONG choice?",probe:"What is the difference between 'is-a' and 'has-a' relationships?",flag:"Most only give good examples — bad examples reveal deeper thinking.",answer:"Wrong when relationship is 'has-a' not 'is-a'. Classic bad example: Stack extending ArrayList — a Stack is not an ArrayList. Another: Square extending Rectangle breaks Liskov since a Square can't behave like a Rectangle when width ≠ height."},
+      {q:"What does it mean for a class to be 'tightly coupled' to another?",probe:"How would you reduce coupling?",flag:"Green flag if they mention interfaces or dependency injection.",answer:"Class A directly depends on concrete Class B — changing B forces changes in A. To reduce: depend on interfaces, use dependency injection, follow Dependency Inversion Principle."}
+    ],
+    mca:[
+      {q:"What's the difference between an abstract class and an interface? When would you use each?",probe:"Can a class implement multiple interfaces but only extend one abstract class — why is Java designed that way?",flag:"Common gap: knows definition but can't justify design choice.",answer:"Abstract class: can have state, constructors, partial implementation. Interface: pure contract, no state. Java allows multiple interface implementation to avoid the diamond problem that multiple class inheritance creates."},
+      {q:"Explain method overloading vs overriding with a concrete scenario.",probe:"What is runtime polymorphism and how does Java achieve it?",flag:"Overriding confusion is very common — probe carefully.",answer:"Overloading: same method name, different parameters — compile time. Overriding: subclass redefines parent method — runtime. Runtime polymorphism: JVM decides which version to call based on actual object type, not reference type. Achieved via dynamic dispatch."},
+      {q:"What is a constructor? Can a constructor be private? Why would you make it private?",probe:"What design pattern uses a private constructor?",flag:"Singleton pattern — green flag if they connect it without prompting.",answer:"Private constructor prevents external instantiation. Used in Singleton pattern: only one instance should exist, class controls its own instantiation via a static getInstance() method."},
+      {q:"What is the difference between == and .equals() in Java?",probe:"What happens when you compare two String objects with ==?",flag:"String pool confusion is very common.",answer:"== compares references (memory addresses). .equals() compares content. String literals may be == true due to String pool interning — which is the trap many miss."},
+      {q:"What is the 'this' keyword in Java? When is it necessary?",probe:"What is 'super'? When would you use super() in a constructor?",flag:"Foundational Java — surprisingly many stumble on practical use cases.",answer:"'this' refers to current object instance. Necessary when parameter shadows field: this.name = name. 'super' refers to parent class. super() calls parent constructor — required when parent has no no-arg constructor."}
+    ],
+    mtech:[
+      {q:"How does vtable work in C++? Walk me through what happens at runtime when a virtual function is called.",probe:"What is the memory overhead of having a vtable?",flag:"MTech-only. Tests genuine systems understanding.",answer:"Each class with virtual functions gets a vtable — array of function pointers. Each object gets a hidden vptr pointing to its class's vtable. At runtime: virtual call dereferences vptr, looks up function in vtable, calls it. Overhead: one vptr per object (8 bytes on 64-bit), one vtable per class."},
+      {q:"What is the diamond problem in multiple inheritance? How does virtual inheritance solve it?",probe:"Why did Java avoid this through interfaces?",flag:"Strong signal of depth if explained clearly.",answer:"Class D inherits from B and C, both inherit from A — D now has two copies of A's members (ambiguous). Virtual inheritance makes B and C share one copy of A. Java avoids it by not allowing multiple class inheritance — interfaces have no state so no ambiguity."},
+      {q:"What is object slicing in C++? When does it happen and why is it a problem?",probe:"How do you prevent it?",flag:"MTech-level C++ — very few MCA candidates will know this.",answer:"When a derived class object is assigned to a base class object by value, derived-class-specific data is 'sliced off'. Polymorphism is lost. Prevention: use pointers or references (Base& b = derived) instead of value types."},
+      {q:"Explain the SOLID principles. Which one is most commonly violated in practice?",probe:"Give a real example of a violation of the Open/Closed Principle.",flag:"SOLID is taught — asking which is violated most tests if they've actually applied it.",answer:"S:Single Responsibility, O:Open/Closed, L:Liskov, I:Interface Segregation, D:Dependency Inversion. Most violated: Open/Closed — developers habitually add if-else/switch cases instead of adding new classes."},
+      {q:"What is the difference between composition and aggregation in OOP?",probe:"Give a code-level example where the difference matters in memory management.",flag:"Lifecycle ownership is the key insight.",answer:"Composition: strong ownership — child cannot exist without parent (Room destroyed with House). Aggregation: weak ownership — child exists independently (Professor survives Department deletion). In code: composition creates inside constructor; aggregation takes reference."}
+    ]},
+    {name:"DBMS",icon:"🗄️",safe:[
+      {q:"What is normalisation and why do we do it?",probe:"Can you give an example of an unnormalised table and walk through normalising it?",flag:"Most can define it — very few can apply it on the spot.",answer:"Eliminates data redundancy and update anomalies. Example: storing CustomerName in every Order row — change of name requires updating every order. 1NF: atomic values. 2NF: no partial dependencies. 3NF: no transitive dependencies."},
+      {q:"What is the difference between WHERE and HAVING in SQL?",probe:"Write a query to find departments with more than 5 employees.",flag:"Surprisingly common gap even for project-experienced candidates.",answer:"WHERE filters rows before grouping. HAVING filters groups after GROUP BY. Cannot use aggregate functions (SUM, COUNT) in WHERE. Example: SELECT dept, COUNT(*) FROM employees GROUP BY dept HAVING COUNT(*) > 5."},
+      {q:"What is a primary key vs a foreign key? Why do we need foreign keys?",probe:"What happens if you insert a row with a foreign key that doesn't exist in the parent table?",flag:"Referential integrity — many can't apply it practically.",answer:"Primary key: uniquely identifies each row. Foreign key: references a primary key in another table, enforcing referential integrity. Inserting a non-existent FK value causes a referential integrity violation — DB rejects the insert."},
+      {q:"What is the difference between DELETE, TRUNCATE, and DROP?",probe:"Which one can be rolled back? Why?",flag:"Rollback behaviour reveals transaction understanding.",answer:"DELETE: removes specific rows, logged, can be rolled back. TRUNCATE: removes all rows, minimal logging, generally cannot be rolled back, resets auto-increment. DROP: removes entire table structure and data, DDL operation, cannot be rolled back."}
+    ],
+    mca:[
+      {q:"Write a query to find the second highest salary from an Employee table.",probe:"Now write it without using LIMIT or TOP.",flag:"Look for multiple approaches, not just one.",answer:"With LIMIT: SELECT DISTINCT salary FROM employees ORDER BY salary DESC LIMIT 1 OFFSET 1. Without LIMIT: SELECT MAX(salary) FROM employees WHERE salary < (SELECT MAX(salary) FROM employees). Also: DENSE_RANK() window function. Key: handle DISTINCT for duplicate salaries."},
+      {q:"What is a transaction? Explain ACID properties in plain English.",probe:"What happens if the system crashes between two steps of a transaction?",flag:"Many can list ACID but can't explain Atomicity in a failure scenario.",answer:"Transaction = group of operations that must all succeed or all fail. Atomicity (all or nothing — crash mid-way rolls back), Consistency (valid state to valid state), Isolation (concurrent transactions don't interfere), Durability (committed data survives crashes)."},
+      {q:"What is a JOIN? Explain the difference between INNER, LEFT, and FULL OUTER JOIN.",probe:"Write a query to find all employees who have no manager assigned.",flag:"LEFT JOIN with NULL check — practical application of join types.",answer:"INNER JOIN: only matching rows from both tables. LEFT JOIN: all rows from left table, NULLs for non-matching right rows. FULL OUTER JOIN: all rows from both. No manager query: SELECT e.name FROM employees e LEFT JOIN employees m ON e.manager_id = m.id WHERE m.id IS NULL."},
+      {q:"What is an index in a database? How does it speed up queries?",probe:"If indexes speed things up, why not index every column?",flag:"Write penalty on indexed columns — many don't know this tradeoff.",answer:"Index is a data structure (usually B-tree) for fast lookup without scanning every row. Like a book index. Why not index everything: indexes take storage space, and every INSERT/UPDATE/DELETE must also update all indexes on that table, slowing writes."},
+      {q:"What is a view in SQL? How is it different from a table?",probe:"Can you insert data into a view? Why or why not?",flag:"Updateable views have conditions — catches memorisers.",answer:"A view is a saved SQL query that looks like a table. Doesn't store data — runs the query when accessed. Can insert into simple views (one base table, no GROUP BY, DISTINCT, aggregates). Complex views are not updateable because the DB can't determine where to send the data."},
+      {q:"What is a stored procedure? How is it different from a function in SQL?",probe:"What are the advantages of stored procedures over writing queries in application code?",flag:"Many MCA candidates have used but not thought about it.",answer:"Stored procedure: precompiled, can have IN/OUT params, can call DML, can't be used in SELECT. Function: returns a value, used inside queries, no side effects. Advantages: reduced network traffic, precompiled (faster), centralised logic, security (grant execute without table access)."}
+    ],
+    mtech:[
+      {q:"What is MVCC? How does Postgres use it to handle concurrent reads and writes?",probe:"What are phantom reads and which isolation level prevents them?",flag:"MTech-only — tests deep concurrency understanding.",answer:"MVCC: instead of locking, Postgres keeps multiple versions of a row. Readers see a snapshot from transaction start — never block writers. Old versions cleaned up by VACUUM. Phantom reads: new rows appear in a repeated query due to another transaction's insert. Prevented by SERIALIZABLE isolation."},
+      {q:"Explain the difference between a clustered and non-clustered index.",probe:"Why would too many indexes slow down write operations?",flag:"Index tradeoffs are a strong differentiator.",answer:"Clustered index: determines physical order of rows in table — only one per table (primary key in InnoDB). Non-clustered: separate structure pointing to rows. Multiple allowed. Write slowdown: every INSERT/UPDATE/DELETE must update all affected indexes. A table with 10 indexes has 10 structures to maintain on every write."},
+      {q:"What is the CAP theorem? Can a distributed database be all three — consistent, available, and partition-tolerant?",probe:"Where does MongoDB sit on the CAP triangle? What about Cassandra?",flag:"MTech-level — connects theory to real systems.",answer:"CAP: in a distributed system, only 2 of 3 guaranteed. Network partitions are inevitable, so real systems choose CP or AP. MongoDB: CP (strong consistency, may sacrifice availability). Cassandra: AP (always available, eventually consistent)."},
+      {q:"What is query optimisation? What does a query execution plan tell you?",probe:"What is a full table scan and when would the optimiser choose it over an index?",flag:"Tests whether they understand what happens under the hood of a query.",answer:"Query optimiser chooses the most efficient execution plan. Plan shows: indexes used, join order, estimated rows, cost. Full table scan chosen when: query returns a large percentage of rows (index overhead not worth it), or when table statistics are stale."},
+      {q:"What is the difference between optimistic and pessimistic locking?",probe:"Which approach for a high-read, low-write system?",flag:"Concurrency control design — tests systems thinking.",answer:"Pessimistic: lock row when reading, assuming conflict. Safe but blocks concurrent readers. Optimistic: no lock on read; at write time, check if data changed (via version number); if changed, reject and retry. For high-read, low-write: optimistic — conflicts are rare, no need to block reads."}
+    ]},
+    {name:"OS",icon:"⚙️",safe:[
+      {q:"What is a deadlock? Describe the four conditions that cause it.",probe:"Give me a real-world analogy for deadlock.",flag:"Coffman conditions often memorised — the analogy reveals real understanding.",answer:"Deadlock: two or more processes waiting forever for resources held by each other. Four conditions (Coffman): 1) Mutual exclusion, 2) Hold and wait, 3) No preemption, 4) Circular wait. Real-world analogy: two people trying to pass in a narrow corridor, each waiting for the other to move."},
+      {q:"What is virtual memory and why does an OS need it?",probe:"What happens when a process accesses memory that's been swapped to disk?",flag:"Many know the term, few understand the page fault mechanism.",answer:"Virtual memory lets programs use more memory than physically available by using disk as RAM extension. OS maps virtual addresses to physical ones via page table. When process accesses page not in RAM: page fault → OS suspends process → loads page from disk → resumes."},
+      {q:"What is the difference between multiprogramming and multitasking?",probe:"What role does the CPU scheduler play in multitasking?",flag:"Tests whether they understand why modern OSes feel responsive.",answer:"Multiprogramming: multiple programs loaded in memory so CPU is never idle — when one waits for I/O, another runs. Multitasking: CPU switches between programs so rapidly it appears simultaneous. Multitasking is multiprogramming + time-slicing."},
+      {q:"What is a system call? Give two examples.",probe:"What happens at the hardware level when a system call is made?",flag:"User mode vs kernel mode transition — green flag if they mention privilege levels.",answer:"System call is how user programs request OS services. Examples: read() to read a file, fork() to create a process. At hardware level: program executes TRAP/SYSCALL instruction → CPU switches from user mode to kernel mode → executes kernel function → returns to user mode."}
+    ],
+    mca:[
+      {q:"What is the difference between a process and a thread?",probe:"What is shared between threads of the same process? What is not shared?",flag:"Stack vs heap sharing is a common gap.",answer:"Process: independent program with own memory space. Thread: lightweight unit within a process. Threads share: heap, code segment, open file descriptors, global variables. Threads do NOT share: stack (each has its own), registers, program counter."},
+      {q:"What is a context switch? What does the OS save and restore?",probe:"Why is context switching expensive?",flag:"Green flag: mentions PCB. Red flag: just says 'CPU switches between processes.'",answer:"Context switch: saving state of current process and loading state of next. OS saves/restores PCB: CPU registers, program counter, stack pointer, memory maps, open file list. Expensive because: CPU cache is invalidated, TLB flush (page table cache), OS overhead for scheduling decision."},
+      {q:"What is the difference between preemptive and non-preemptive scheduling?",probe:"What is starvation? Which scheduling algorithms can cause it?",flag:"Priority scheduling and starvation — practical OS reasoning.",answer:"Preemptive: OS can forcibly take CPU from running process (Round Robin, SRTF). Non-preemptive: process runs until it voluntarily yields (FCFS, SJF). Starvation: process waits indefinitely because higher-priority processes keep arriving. Solution: aging — gradually increase priority of waiting processes."},
+      {q:"What is a race condition? Give a simple example.",probe:"How do you prevent a race condition?",flag:"Synchronisation basics — very relevant for real-world dev work.",answer:"Race condition: outcome depends on unpredictable sequence of thread execution. Example: two threads both read balance=100, both add 50, both write 150 — final balance is 150 instead of 200. Prevention: mutex/lock (only one thread in critical section), atomic operations."},
+      {q:"What is thrashing in OS?",probe:"What causes thrashing and how does an OS detect and recover from it?",flag:"Many know the word, few can explain the cause.",answer:"Thrashing: CPU spends more time swapping pages in/out than executing — CPU utilisation drops to near zero. Caused by: too many processes competing for insufficient RAM. Detection: CPU utilisation drops while page fault rate spikes. Recovery: reduce degree of multiprogramming (suspend some processes)."}
+    ],
+    mtech:[
+      {q:"What is the difference between a mutex and a semaphore?",probe:"When does a binary semaphore behave like a mutex — and when does it not?",flag:"Ownership semantics is the key differentiator — most miss this.",answer:"Mutex: ownership-based lock — only the thread that locked it can unlock it. Binary semaphore: signalling mechanism — any thread can signal (release) it. Binary semaphore lacks ownership: Thread B can release a semaphore locked by Thread A — dangerous. Mutex prevents priority inversion via priority inheritance."},
+      {q:"Explain the difference between paging and segmentation.",probe:"What is internal vs external fragmentation and which does paging cause?",flag:"Connects memory model to real OS design.",answer:"Paging: fixed-size pages — no external fragmentation but has internal fragmentation (last page may not be fully used). Segmentation: variable-size logical segments — matches programmer's view but causes external fragmentation. Modern OSes use both."},
+      {q:"What is a spinlock? When would you prefer it over a mutex?",probe:"What is busy waiting and why is it acceptable in some kernel contexts?",flag:"Kernel-level synchronisation — MTech only.",answer:"Spinlock: thread repeatedly checks (spins) if lock is available instead of sleeping. Busy waiting wastes CPU but avoids overhead of putting thread to sleep and waking it. Preferred when: critical section is very short (less than cost of a context switch), or you're in kernel code where sleeping is not allowed (interrupt handlers)."},
+      {q:"Explain the producer-consumer problem. How do you solve it using semaphores?",probe:"What happens if consumer is faster than producer? What if slower?",flag:"Classic synchronisation problem.",answer:"Producer adds to buffer, consumer removes — need to synchronise. Solution: 3 semaphores: mutex (protect buffer), empty (empty slots, init=N), full (filled slots, init=0). Producer: wait(empty)→wait(mutex)→add→signal(mutex)→signal(full). Consumer reverse. Consumer faster: blocks on wait(full). Producer faster: blocks on wait(empty)."},
+      {q:"What is copy-on-write in OS? Where is it used?",probe:"How does fork() use copy-on-write?",flag:"Memory optimisation at OS level — strong MTech signal.",answer:"COW: instead of copying data immediately, share same pages and only copy a page when one process tries to write to it. Used in fork(): child and parent initially share all memory pages. When either writes to a page, OS creates a copy for that process only. Result: fork() is fast."}
+    ]},
+    {name:"CN",icon:"🌐",safe:[
+      {q:"What happens step by step when you type google.com in a browser and press Enter?",probe:"At what step does TCP come in? What about DNS?",flag:"Classic question — depth of answer reveals networking knowledge clearly.",answer:"1) DNS lookup: browser checks cache, then OS, then DNS server to resolve → IP. 2) TCP 3-way handshake with server IP. 3) TLS handshake if HTTPS. 4) HTTP GET request sent. 5) Server returns HTML. 6) Browser parses, makes further requests for CSS/JS/images. 7) Page renders."},
+      {q:"What is the difference between TCP and UDP? When would you use UDP?",probe:"Why do video calls use UDP despite packet loss risk?",flag:"Most know TCP vs UDP — probe the tradeoff reasoning.",answer:"TCP: connection-oriented, reliable, ordered, error-checked, slower. UDP: connectionless, no guarantee of delivery or order, faster. Use UDP for: video calls (dropped frame better than waiting for retransmit — latency matters more than perfection), live gaming, DNS queries."},
+      {q:"What is an IP address? What is the difference between IPv4 and IPv6?",probe:"Why are we running out of IPv4 addresses? How has NAT helped?",flag:"NAT understanding is a green flag.",answer:"IP address: numerical label identifying a device on a network. IPv4: 32-bit (~4.3 billion addresses). IPv6: 128-bit (virtually unlimited). NAT (Network Address Translation) delays exhaustion by letting many private IP devices share one public IP — your home router does this."},
+      {q:"What is the difference between a hub, a switch, and a router?",probe:"At which OSI layer does each operate?",flag:"OSI layer mapping — tests depth of networking model understanding.",answer:"Hub (Layer 1): broadcasts every packet to all ports — dumb, creates collisions. Switch (Layer 2): uses MAC addresses to send frames only to the correct port. Router (Layer 3): routes packets between different networks using IP addresses, connects your LAN to the internet."}
+    ],
+    mca:[
+      {q:"What is a three-way handshake in TCP?",probe:"Why three steps and not two? What does the third step achieve?",flag:"Many know the steps — few understand WHY the third ACK matters.",answer:"SYN → SYN-ACK → ACK. Why 3 and not 2: with 2 steps, the server knows the client can send, but the client doesn't confirm it received the server's SYN-ACK. The third ACK proves the client received it and that the return path works."},
+      {q:"What is the difference between HTTP and HTTPS?",probe:"What exactly does TLS encrypt? Does it encrypt headers too?",flag:"Green flag: knows TLS handshake concept. Red flag: just says 'HTTPS is secure.'",answer:"HTTPS = HTTP over TLS. TLS provides: encryption, authentication (certificate verifies server identity), integrity. TLS encrypts everything after the TLS handshake: body, headers (including cookies), and URL path. However, the domain name (SNI) is visible in the TLS handshake."},
+      {q:"What is the difference between a MAC address and an IP address?",probe:"At what layer does each operate? Why do we need both?",flag:"Layer 2 vs Layer 3 — many confuse these.",answer:"MAC address (Layer 2): hardware address burned into NIC, used for communication on same local network. IP address (Layer 3): logical address used for routing across networks. IP routes to the right network; MAC delivers to the right device within that network. ARP maps IP → MAC."},
+      {q:"What is DNS? What happens if the DNS server is down?",probe:"What is DNS caching and what problems can stale cache cause?",flag:"Caching and TTL understanding — practical web development relevance.",answer:"DNS: translates domain names to IP addresses. If DNS server is down: new lookups fail, but cached entries still work for their TTL. Stale cache problem: if you change your server IP, users with cached old IPs keep hitting the old server until TTL expires."},
+      {q:"What is a subnet? What is the purpose of subnetting?",probe:"If a network has IP 192.168.1.0/24, how many usable hosts does it have?",flag:"CIDR notation — tests applied networking vs just theory.",answer:"Subnet: logical subdivision of an IP network. Purpose: reduce network traffic, improve security, efficient IP allocation. 192.168.1.0/24: /24 means 24 bits for network, 8 bits for hosts. 2^8 = 256 addresses, minus 2 (network address and broadcast) = 254 usable hosts."}
+    ],
+    mtech:[
+      {q:"What is the difference between flow control and congestion control in TCP?",probe:"How does TCP's sliding window implement flow control?",flag:"MTech-only — tests protocol-level depth.",answer:"Flow control: prevents the sender from overwhelming the receiver's buffer. Receiver advertises its window size. Sliding window: sender maintains a window of unacknowledged bytes it can send; window slides forward as ACKs arrive. Congestion control: prevents overwhelming the network. Uses slow start, congestion avoidance, fast retransmit."},
+      {q:"Explain how BGP works at a high level. Why is it called a path vector protocol?",probe:"What is a BGP hijack and why is it dangerous?",flag:"For networking-focused MTech candidates only.",answer:"BGP (Border Gateway Protocol): routes traffic between autonomous systems (large networks like ISPs). Called path vector because it advertises the full AS path to a destination — routers choose paths based on policies, not just shortest hops. BGP hijack: malicious AS announces it owns an IP prefix it doesn't — traffic gets redirected through that AS."},
+      {q:"What is the difference between symmetric and asymmetric encryption? Where is each used in HTTPS?",probe:"Why doesn't HTTPS use asymmetric encryption for all data if it's more secure?",flag:"Performance vs security tradeoff — tests cryptography basics in networking context.",answer:"Symmetric: same key for encrypt/decrypt — fast but key sharing is the problem. Asymmetric: public/private key pair — secure key exchange but 1000x slower. HTTPS uses both: asymmetric (RSA/ECDH) during TLS handshake to securely exchange a symmetric session key, then symmetric (AES) for all actual data."},
+      {q:"What is ARP? How does a machine find the MAC address for an IP on its local network?",probe:"What is an ARP spoofing attack? How is it carried out?",flag:"Layer 2 protocol depth — strong MTech differentiator.",answer:"ARP (Address Resolution Protocol): maps IP → MAC on a local network. Process: machine broadcasts 'Who has IP X?' → machine with that IP replies with its MAC → sender caches it. ARP spoofing: attacker sends fake ARP replies claiming their MAC corresponds to another IP — victims route traffic through the attacker (man-in-the-middle)."},
+      {q:"What is the difference between HTTP/1.1, HTTP/2, and HTTP/3?",probe:"What problem does HTTP/2 multiplexing solve? What problem does HTTP/3 address that HTTP/2 doesn't?",flag:"Protocol evolution understanding — relevant for modern backend/web MTech candidates.",answer:"HTTP/1.1: one request per TCP connection at a time (head-of-line blocking). HTTP/2: multiplexing — multiple requests on one TCP connection simultaneously, header compression (HPACK), server push. HTTP/3: uses QUIC (UDP-based) instead of TCP — eliminates TCP-level head-of-line blocking, faster connection setup."}
+    ]},
+    {name:"DSA",icon:"🔢",safe:[
+      {q:"What is the difference between an array and a linked list? When would you choose one over the other?",probe:"If you need fast random access, which do you choose? What if you need fast insertions in the middle?",flag:"Tradeoff reasoning is the goal, not definitions.",answer:"Array: contiguous memory, O(1) random access, O(n) insert/delete in middle. Linked list: nodes with pointers, O(n) access, O(1) insert/delete if you have the pointer. In practice, arrays win most of the time due to cache locality."},
+      {q:"What is a stack and what is a queue? Give a real-world use case for each.",probe:"How would you implement a queue using two stacks?",flag:"Classic problem — tests DS manipulation thinking.",answer:"Stack: LIFO. Use case: browser back button, function call stack, undo/redo. Queue: FIFO. Use case: printer queue, BFS traversal, task scheduling. Implement queue using two stacks: push to stack1. To dequeue, if stack2 empty, pop all stack1 → stack2, then pop from stack2. Amortised O(1)."},
+      {q:"What is Big-O notation? What does O(n log n) mean in plain English?",probe:"What is the time complexity of binary search and why?",flag:"Complexity analysis is foundational — most can parrot O(n) but can't explain log n.",answer:"Big-O: describes how runtime grows relative to input size. O(n log n): for each of n elements, do log n work — like merge sort. Binary search: O(log n) because each step halves the search space. After log₂(n) steps, only 1 element remains."}
+    ],
+    mca:[
+      {q:"What is the difference between a binary tree and a binary search tree?",probe:"What is the time complexity of search in a BST? When does it degrade to O(n)?",flag:"Degenerate BST (sorted input) — many miss this worst case.",answer:"Binary tree: each node has at most 2 children, no ordering constraint. BST: left subtree contains smaller values, right larger. Search in BST: O(log n) average. Degrades to O(n) when unbalanced — e.g. inserting sorted data [1,2,3,4,5] creates a linear chain. Solution: self-balancing trees like AVL or Red-Black trees."},
+      {q:"How does a HashMap work internally? What happens during a collision?",probe:"What is the load factor and why does Java's HashMap resize at 0.75?",flag:"Internal mechanics — separates users from understanders.",answer:"HashMap uses an array of buckets. Key is hashed → index in array. Collision: chaining (linked list at that bucket) or open addressing. Java uses chaining, converts to a red-black tree if a bucket exceeds 8 entries. Load factor 0.75: resize when 75% full — balances memory vs collision probability."},
+      {q:"What is recursion? What is the base case and why is it important?",probe:"What happens if you forget the base case? What is a stack overflow?",flag:"Connects recursion to memory — practical understanding signal.",answer:"Recursion: function calls itself with a smaller problem. Base case: the condition that stops recursion. Without it: infinite recursion → each call pushes a frame onto the call stack → stack memory exhausted → StackOverflowError. Each recursive call uses O(1) stack space, so depth-n recursion uses O(n) stack space."},
+      {q:"What is the difference between BFS and DFS? When would you use each?",probe:"Which one uses a queue and which uses a stack?",flag:"Implicit stack in DFS recursion — tests deeper understanding.",answer:"BFS: explores level by level using a queue. Use for: shortest path in unweighted graph, level-order traversal. DFS: goes deep first using a stack (or recursion's call stack implicitly). Use for: cycle detection, topological sort, maze solving. BFS uses more memory (stores entire level); DFS uses less (just the path depth)."},
+      {q:"What is a heap data structure? How is it different from a BST?",probe:"What is the time complexity of inserting into a heap vs a BST?",flag:"Priority queue use case — tests awareness of specialized data structures.",answer:"Heap: complete binary tree with heap property (parent ≥ children for max-heap). Used for priority queues, heap sort. BST: maintains sorted order across all nodes. Key difference: heap only guarantees max/min at root (O(1) access to extreme); BST gives O(log n) to any element in sorted order."}
+    ],
+    mtech:[
+      {q:"What is dynamic programming? How is it different from divide-and-conquer?",probe:"What is memoisation vs tabulation? When would you choose each?",flag:"DP understanding is a strong MTech differentiator.",answer:"DP: solve complex problems by breaking into overlapping subproblems and storing results to avoid recomputation. Divide-and-conquer: subproblems are independent (no overlap) — merge sort, quick sort. Memoisation: top-down, recursive, cache results as you go. Tabulation: bottom-up, iterative, fill a table — better space control, no recursion overhead."},
+      {q:"What is a graph? What is the difference between BFS and Dijkstra's algorithm?",probe:"When does BFS give you the shortest path and when does it not?",flag:"Weighted vs unweighted — tests algorithmic reasoning.",answer:"BFS gives shortest path in terms of number of edges — works for unweighted graphs. Dijkstra gives shortest path by total weight — works for weighted graphs (non-negative). BFS fails on weighted graphs: a path with more hops but less weight would be missed."},
+      {q:"What is a trie? Where is it more efficient than a HashMap for string lookups?",probe:"What is the time complexity of insert and search in a trie?",flag:"Advanced DS — strong differentiator for MTech candidates.",answer:"Trie (prefix tree): tree where each node represents a character. Insert/search: O(m) where m = string length. Better than HashMap for: prefix queries ('find all words starting with pre'), autocomplete, spell checking. HashMap search is also O(m) but can't do prefix queries efficiently."},
+      {q:"Explain the difference between a stable and unstable sort. Give an example of each.",probe:"Why does stability matter in practice?",flag:"Algorithmic properties — tests depth beyond just knowing sort names.",answer:"Stable sort: preserves relative order of equal elements. Merge sort, Timsort (Python/Java default) — stable. Unstable: quicksort, heapsort. Why stability matters: if you sort employees by name, then by department — a stable sort keeps names alphabetical within each department."},
+      {q:"What is amortised time complexity? Use dynamic array resizing as an example.",probe:"Why is the amortised cost of push to a dynamic array O(1) even though resize is O(n)?",flag:"Amortised analysis — advanced topic, strong MTech signal.",answer:"Amortised: average cost per operation over a sequence of operations. Dynamic array: most pushes are O(1). When full, resize doubles capacity — O(n) copy. But resize happens exponentially less often. Total work for n pushes: n + n/2 + n/4 + ... = 2n = O(n). Amortised cost per push = O(n)/n = O(1)."}
+    ]},
+    {name:"SWE",icon:"🏗️",safe:[
+      {q:"What is version control and why is it important? Have you used Git?",probe:"What is the difference between git commit and git push?",flag:"Basic Git literacy — red flag if they haven't used version control on their project.",answer:"Version control tracks changes over time, enables collaboration, and allows rollback. Git commit: saves changes to local repository. Git push: uploads local commits to remote (GitHub/GitLab). Red flag: doesn't know the difference — means they haven't actually used Git collaboratively."},
+      {q:"What is the difference between a compiler and an interpreter?",probe:"Is Python compiled or interpreted? What about Java?",flag:"Java's JVM (bytecode + JIT) — nuanced answer is a green flag.",answer:"Compiler: translates entire source code to machine code before execution (C, C++). Interpreter: translates and executes line by line. Java: compiled to bytecode (.class files) by javac, then interpreted/JIT-compiled by JVM at runtime — hybrid. Python: compiled to bytecode (.pyc) then interpreted by CPython — also hybrid."},
+      {q:"What is an API? What does REST mean?",probe:"What is the difference between a GET and a POST request?",flag:"REST basics — relevant for almost every fresher role.",answer:"API: interface for software components to communicate. REST: architectural style for APIs using HTTP. GET: retrieve data, no side effects, can be cached. POST: send data to create/update, has side effects, not idempotent. PUT is idempotent (same result if repeated), POST is not."}
+    ],
+    mca:[
+      {q:"What is the SDLC? What are its phases?",probe:"What is the difference between Agile and Waterfall? When would you use each?",flag:"Practical model awareness — check if they've actually used Agile.",answer:"SDLC: Requirements → Design → Implementation → Testing → Deployment → Maintenance. Waterfall: sequential, each phase complete before next. Agile: iterative, 2-week sprints, requirements evolve. Red flag: says they used Agile but can't explain what a sprint or retrospective is."},
+      {q:"What is the difference between unit testing, integration testing, and end-to-end testing?",probe:"Have you written any tests? What framework did you use?",flag:"Testing awareness is rare in freshers — green flag if they've actually written tests.",answer:"Unit testing: test one function/method in isolation — fast, cheap. Integration testing: test how modules work together — catches interface bugs. E2E: test full user flow — slow, expensive, catches real-world bugs. Common frameworks: JUnit (Java), pytest (Python), Selenium/Cypress (E2E)."},
+      {q:"What is a design pattern? Name one you have ACTUALLY used.",probe:"Walk me through exactly where in your code you used it and why.",flag:"Key test: 'actually used' vs 'read about'. Force concrete explanation.",answer:"Design pattern: reusable solution to a common design problem. Common: Singleton (one instance — DB connection pool), Factory (create objects without specifying class), Observer (event listeners), MVC. Test: ask them to point to a file in their project. If they can't, they read about it but didn't use it."},
+      {q:"What is the difference between synchronous and asynchronous code execution?",probe:"Give an example of where async programming would prevent a problem in a web application.",flag:"Async thinking is essential for web dev.",answer:"Synchronous: each operation waits for the previous — simple but blocks the thread. Asynchronous: operations can run without waiting. Example: web server getting data from DB. Sync: server thread blocks — can only handle one request at a time. Async: server sends DB query and handles other requests while waiting."},
+      {q:"What is Docker? Why would a developer use it?",probe:"What problem does Docker solve that a VM also solves — and what does Docker do better?",flag:"Container vs VM distinction — many know Docker without understanding why it's different.",answer:"Docker: packages an application with all its dependencies into a container that runs consistently anywhere. Solves 'works on my machine' problem. vs VM: VMs virtualise hardware and run a full OS (GBs, slow start). Docker containers share the host OS kernel — MBs, start in seconds. Docker is much lighter and faster to spin up."}
+    ],
+    mtech:[
+      {q:"What is a microservices architecture? How is it different from a monolith?",probe:"What problems does microservices introduce that a monolith doesn't?",flag:"Distributed systems tradeoffs — tests if they understand the cost, not just the hype.",answer:"Monolith: entire application in one deployable unit — simple, fast for small teams. Microservices: independently deployable services communicating over network. Problems: network latency, distributed tracing is hard, data consistency across services, service discovery, increased operational complexity. Best for large teams/systems."},
+      {q:"What is CI/CD? Walk me through what happens from a code commit to a production deployment.",probe:"What stages would you include in a deployment pipeline?",flag:"DevOps awareness — strong signal for modern engineering readiness.",answer:"CI: every code commit triggers automated build + tests. CD: automatically deploy to production (or staging) after CI passes. Pipeline: 1) Code commit → 2) Automated tests → 3) Build Docker image → 4) Deploy to staging → 5) Smoke tests → 6) Deploy to production → 7) Monitor. Each stage gates the next."},
+      {q:"What is eventual consistency? Where does it come up in distributed systems?",probe:"Give a real-world example where eventual consistency is acceptable vs where it is dangerous.",flag:"CAP theorem application — strong MTech differentiator.",answer:"Eventual consistency: all nodes will eventually have the same data, but may temporarily differ. Acceptable: social media like count, DNS propagation, product recommendations. Dangerous: bank balance (can't have two ATMs show different balances), stock inventory (could oversell), medical records."},
+      {q:"What is the difference between horizontal and vertical scaling?",probe:"What is a stateless service and why does it scale horizontally better?",flag:"System design foundations — tests if they can reason about scale.",answer:"Vertical scaling (scale up): add more CPU/RAM to existing server — has limits, single point of failure. Horizontal scaling (scale out): add more servers behind a load balancer. Stateless service: doesn't store session data on the server — any server can handle any request. Stateful services require sticky sessions or shared session store."},
+      {q:"What is a message queue? Give a use case where you would use Kafka or RabbitMQ instead of a direct API call.",probe:"What is the difference between a message queue and a pub-sub system?",flag:"Asynchronous architecture — strong differentiator for backend-focused MTech.",answer:"Message queue: buffer between services — producer pushes messages, consumer processes them asynchronously. Use when: processing is slow, decoupling services, handling traffic spikes, ensuring delivery even if consumer is down. RabbitMQ: one consumer per message. Kafka: multiple consumers can each receive every message — better for event streaming."}
+    ]},
+    {name:"AI Usage",icon:"🤖",safe:[
+      {q:"Do you use any AI tools while coding? Which ones?",probe:"Walk me through a specific moment in your project where you used AI — what did you ask and what did you do with the output?",flag:"Almost everyone uses AI. The question is HOW. Red flag: 'I don't use AI' (likely lying). Also red flag: 'I use it for everything' with no specifics.",answer:"Listen for specificity — which tool (Copilot, ChatGPT, Gemini, Cursor), for what task, and crucially: what did they do after getting the output? Strong candidates verify, test, and understand AI output. Weak ones paste and pray."},
+      {q:"Has AI ever given you wrong code that you used? What happened?",probe:"How did you find out it was wrong? What did you learn from that?",flag:"This is a trust calibration question. Green flag: honest 'yes' with a specific story and a lesson. Red flag: 'No, AI always gives correct code.'",answer:"Every developer who genuinely uses AI has a story of it being wrong. The best answers: describe the bug (hallucinated API method, wrong SQL join, logic error), how they caught it (tests failed, runtime error), and what they now do differently (always test AI output, understand before using)."},
+      {q:"When would you NOT use AI to write code?",probe:"Is there any part of your project you deliberately wrote without AI help? Why?",flag:"Tests judgment about AI's limits. Green flag: identifies specific cases — security-sensitive code, core algorithms they want to understand.",answer:"Good answers include: security/auth logic (AI may generate insecure patterns), core business logic (need to own and understand it fully), anything they need to explain to a team member — 'I need to understand it myself first' is a strong green flag."},
+      {q:"If I gave you a coding problem right now, would you be able to solve it without AI?",probe:"What is the hardest thing you have solved without AI assistance?",flag:"Directly tests whether the AI is a crutch or a tool. Watch their reaction — confidence vs anxiety reveals a lot.",answer:"Right answer is honest self-awareness. Strong candidates: 'Yes, it would take longer but I can reason through it — AI helps me go faster, not think for me.' Weak candidates get visibly anxious. Green flag: they immediately start thinking about the problem rather than defending themselves."}
+    ],
+    mca:[
+      {q:"How do you use AI differently for understanding a concept vs writing code?",probe:"Give me an example of a concept you learned using AI — how did you verify you actually understood it?",flag:"Tests metacognition — do they use AI as a tutor or just a code generator?",answer:"Strong answer: uses AI as a Socratic tutor — asks it to explain, asks follow-up questions, then tries to explain it back without looking. For code: generates a skeleton, reads and understands each line, modifies it for their specific case. Weak: 'I just ask it to explain and move on' — passive consumption, not active learning."},
+      {q:"Have you used AI to help debug code? Walk me through how you did it.",probe:"Did the AI find the bug immediately or did you have to iterate?",flag:"Debugging with AI requires good prompt engineering.",answer:"Good debugging with AI: paste the error message + relevant code + what they expected vs what happened. Strong candidates iterate — if AI's first answer doesn't work, they explain why and ask again. Weak: 'I paste the error and it fixes it' — suggests they don't understand the fix, just apply it."},
+      {q:"Have you ever used AI to generate SQL queries? What do you verify before running it?",probe:"What could go wrong with AI-generated SQL that you'd catch by reading it carefully?",flag:"SQL generated by AI can be subtly wrong — tests practical caution.",answer:"AI SQL risks: wrong JOIN type, missing WHERE clause on UPDATE/DELETE (catastrophic), incorrect aggregation, N+1 query patterns. Strong candidates mention they always check: does the WHERE clause exist? Does the JOIN type match the expected result? Red flag: 'I just run it and check if the output looks right' — no structural verification."},
+      {q:"How do you decide when an AI-generated answer is trustworthy vs when to double-check it?",probe:"What signals in an AI response make you more or less confident in it?",flag:"Epistemological awareness — rare in freshers, strong green flag.",answer:"Trust signals: AI gives a specific, verifiable answer, matches what they already know, cites a reason not just a solution. Distrust signals: AI is confident about something they can't verify, output is more complex than the problem warrants, it references methods they haven't seen before. Best answer: 'I trust it more when I can verify the logic myself.'"},
+      {q:"Has using AI changed how you write code — style, structure, comments?",probe:"Is the code you write now more or less readable than before you used AI?",flag:"Reflective question — tests self-awareness about AI's influence on their habits.",answer:"Honest answers vary. Some: AI makes code more verbose/over-engineered (AI tends to be defensive and thorough). Others: AI helped them learn patterns they now do automatically. Red flag: 'AI makes my code much better' with no critical reflection. Green flag: 'I've noticed AI tends to write very long functions — I now consciously refactor what it gives me.'"}
+    ],
+    mtech:[
+      {q:"What is prompt engineering? Have you ever consciously structured a prompt to get better output?",probe:"How would you prompt AI to help design a database schema vs how you'd prompt it for a debugging problem?",flag:"MTech candidates should understand that AI output quality is a function of input quality.",answer:"Good prompt engineering: include context (what the system does), constraints (tech stack, performance requirements), examples (sample input/output), and format specification. For schema design: describe the domain, relationships, scale. For debugging: include error + stack trace + expected vs actual + what you've already tried. Red flag: 'I just type the problem and see what happens.'"},
+      {q:"What are hallucinations in LLMs? Have you personally encountered one in a technical context?",probe:"Why do LLMs hallucinate — what is it about how they work that makes this happen?",flag:"MTech-level — tests understanding of AI limitations at a model level.",answer:"Hallucination: LLM generates plausible but factually incorrect output with high confidence. Technically: LLMs predict the next token based on patterns — they don't 'know' facts, they model text. When a question falls outside training data, the model interpolates confidently. In code: hallucinated API methods, non-existent library functions, deprecated syntax presented as current."},
+      {q:"What is RAG (Retrieval Augmented Generation)? How would you use it to build a smarter internal tool?",probe:"What problem does RAG solve that fine-tuning doesn't? When would you choose fine-tuning instead?",flag:"Applied AI architecture — strong MTech differentiator for 2025 batch.",answer:"RAG: retrieve relevant documents at query time and include them in the prompt. Solves: outdated knowledge, private/internal data the LLM wasn't trained on. Use case: internal tool that answers questions about company docs — embed docs, retrieve relevant chunks, include in prompt. vs Fine-tuning: fine-tuning changes model weights — good for style/tone, bad for factual updates. RAG is better for dynamic, factual, up-to-date knowledge."},
+      {q:"If you were building a feature using an LLM API, what could go wrong in production that wouldn't happen in testing?",probe:"How would you handle non-deterministic output from an LLM in a production system?",flag:"Production AI thinking — tests systems mindset applied to AI features.",answer:"Production LLM risks: non-determinism (same input, different output each time — hard to test), latency spikes, cost overruns (token usage at scale), prompt injection attacks, model deprecation, content policy blocks. Handling non-determinism: output validation layer, structured output parsing with fallback, retry logic, user-facing indication that AI answers may vary."},
+      {q:"What is the difference between a generative AI model and a discriminative model?",probe:"Where does BERT sit — generative or discriminative? What about GPT?",flag:"Foundational ML theory — separates genuine AI knowledge from tool users.",answer:"Discriminative model: learns the boundary between classes — predicts P(label|input). Examples: logistic regression, SVM, BERT (classifies text). Generative model: learns the data distribution — can generate new samples. Examples: GPT (generates text), GANs (generates images). BERT: discriminative — trained to predict masked tokens (classification task). GPT: generative — trained to predict next token."}
+    ]}
+  ],
+  coding: {
+    warmup:[
+      {q:"Reverse a string without using built-in reverse functions.",probe:"Now do it in-place with O(1) space.",flag:"Use as icebreaker only. Skip if they seem confident.",answer:"Two-pointer approach: i=0, j=len-1, swap s[i] and s[j], move i++ and j-- until they meet. O(n) time, O(1) space."},
+      {q:"FizzBuzz: Print 1–100. Multiples of 3 print 'Fizz', multiples of 5 print 'Buzz', both print 'FizzBuzz'.",probe:"Can you do this without using modulo operator?",flag:"Watch for clean code structure, not just correctness.",answer:"Check 15 first (FizzBuzz), then 3 (Fizz), then 5 (Buzz). Common mistake: checking 3 and 5 separately before checking 15 — prints 'Fizz' then 'Buzz' instead of 'FizzBuzz'."},
+      {q:"Check if a number is a palindrome without converting it to a string.",probe:"What is the edge case for negative numbers?",flag:"Edge case awareness is as important as the solution here.",answer:"Reverse the number mathematically: extract digits via mod 10, build reversed number. Edge cases: negative numbers are never palindromes. Numbers ending in 0 (except 0 itself) can't be palindromes."},
+      {q:"Write a function to count the number of vowels in a string.",probe:"Now make it case-insensitive. How does your solution change?",flag:"Simple but reveals code cleanliness and edge case thinking.",answer:"Iterate string, check if each char is in 'aeiou'. Case-insensitive: convert string to lowercase first OR check against 'aeiouAEIOU'. Minor green flag: using a set instead of string for O(1) lookup."}
+    ],
+    mca:[
+      {q:"Given an array of integers, return indices of the two numbers that add up to a target sum. (Two Sum)",probe:"Your first solution is O(n²). Can you do it in O(n)?",flag:"HashMap approach is the key insight — see if they get there.",answer:"Brute force: check every pair O(n²). Optimal: HashMap — for each number, check if (target - number) exists in map. If yes, return both indices. O(n) time, O(n) space. Watch for: do they arrive at HashMap themselves or need a hint?"},
+      {q:"Check if a string of brackets is balanced. Input: '{[()]}' → true, '{[(])}' → false.",probe:"What data structure are you using and why?",flag:"Stack usage is the insight — tests DS application.",answer:"Use a stack. For each char: if opening bracket, push. If closing bracket, check if top of stack is matching opening — if not, return false. At end, stack should be empty. Why stack: LIFO naturally matches the nesting structure."},
+      {q:"Find the missing number in an array of 1 to n with one number missing.",probe:"Can you solve this without extra space? What's the mathematical approach?",flag:"Sum formula vs XOR — both valid, XOR is elegant.",answer:"Sum formula: expected sum = n*(n+1)/2. Subtract actual sum. Missing = expected - actual. O(n) time, O(1) space. XOR approach: XOR all numbers 1 to n, then XOR all array elements. XOR avoids potential integer overflow."},
+      {q:"Given a sorted array, remove duplicates in-place and return the new length.",probe:"Can you do this without using extra space?",flag:"Two-pointer technique — tests in-place manipulation thinking.",answer:"Two pointers: i (slow, tracks unique position), j (fast, scans array). If arr[j] != arr[i], increment i and copy arr[j] to arr[i]. Return i+1. O(n) time, O(1) space."},
+      {q:"Write a function to check if a string is an anagram of another string.",probe:"What is the time complexity? Can you do it without sorting?",flag:"HashMap frequency count — O(n) solution is the insight.",answer:"Sort both strings, compare — O(n log n). Better: HashMap/array of 26 chars — count frequencies in first string, decrement for second. If any count is non-zero at end, not an anagram. O(n) time, O(1) space."},
+      {q:"Given an array, find the maximum sum of any contiguous subarray. (Kadane's Algorithm)",probe:"Walk me through your logic for handling all-negative arrays.",flag:"Kadane's is a classic — edge case for all negatives separates strong from weak.",answer:"Kadane's: track current_sum and max_sum. For each element: current_sum = max(element, current_sum + element). max_sum = max(max_sum, current_sum). All-negative edge case: initialise max_sum = first element (not 0) — the answer is the least negative number."},
+      {q:"Reverse a linked list iteratively.",probe:"Now do it recursively. What is the difference in space complexity?",flag:"Linked list manipulation — pointer reassignment logic reveals clear thinking.",answer:"Iterative: prev=null, curr=head. While curr: next=curr.next, curr.next=prev, prev=curr, curr=next. Return prev. O(n) time, O(1) space. Recursive: O(n) time, O(n) space (call stack depth = list length). Iterative preferred for long lists to avoid stack overflow."}
+    ],
+    mtech:[
+      {q:"Given a string, find the longest substring without repeating characters.",probe:"Walk me through the time complexity. Can you improve your space usage?",flag:"Sliding window pattern — tests algorithmic thinking.",answer:"Sliding window with HashMap: left and right pointers. Expand right, add char to map with index. If char already in map and index >= left, move left to map[char]+1. Update max length. O(n) time, O(min(n,alphabet)) space."},
+      {q:"Detect if a linked list has a cycle.",probe:"What is Floyd's algorithm? Why does using two pointers work mathematically?",flag:"Green flag: explains the math, not just the code.",answer:"Floyd's cycle detection (tortoise and hare): slow pointer moves 1 step, fast moves 2. If they meet, there's a cycle. Why it works: in a cycle, fast pointer laps slow. Relative speed is 1 step per iteration — guaranteed to meet within cycle_length iterations."},
+      {q:"Given a binary tree, return its level-order traversal as a list of lists.",probe:"What is the time and space complexity? How does the queue size relate to tree width?",flag:"BFS mastery — queue management and complexity analysis.",answer:"BFS with queue. For each level: record queue size (= nodes at this level), process exactly that many nodes, add their children. This separates levels. O(n) time, O(w) space where w = max width. Key: using the queue size snapshot to know where each level ends."},
+      {q:"Given an array of heights, find how much water can be trapped after raining. (Trapping Rain Water)",probe:"Your brute force is O(n²). Can you solve it in O(n) with O(1) space?",flag:"Two-pointer approach — tests advanced array problem solving.",answer:"Two-pointer O(n), O(1): left=0, right=n-1, left_max=0, right_max=0. At each step: if height[left] < height[right], water at left = left_max - height[left], advance left. Else same for right. Logic: water level = min(max_left, max_right) - height."},
+      {q:"Given a matrix of 0s and 1s, count the number of islands (connected groups of 1s).",probe:"Walk me through how you would use DFS or BFS to solve this.",flag:"Graph on a grid — tests 2D traversal and connected components thinking.",answer:"DFS: iterate matrix. When 1 found, increment count, then DFS to mark all connected 1s as visited (set to 0). DFS explores all 4 neighbours. O(m*n) time and space. BFS alternative: use a queue — same complexity but avoids recursion depth issues for very large grids."},
+      {q:"Implement a LRU (Least Recently Used) cache with O(1) get and put operations.",probe:"What data structures do you need and why? Walk me through the design.",flag:"HashMap + Doubly Linked List — strong system design + DS problem.",answer:"HashMap + Doubly Linked List. HashMap: O(1) lookup by key. DLL: O(1) insert/delete when you have the node pointer. DLL maintains order (most recent at head, least recent at tail). Get: find node in hashmap, move to head, return value. Put: if exists, update and move to head. If over capacity, remove tail node and its hashmap entry."},
+      {q:"Given a sorted array rotated at some pivot, find a target element. (Rotated Binary Search)",probe:"How do you determine which half of the array is sorted?",flag:"Modified binary search — tests ability to adapt known algorithms.",answer:"Binary search with pivot detection. At each step: check which half is sorted by comparing arr[left] and arr[mid]. If arr[left] <= arr[mid]: left half is sorted. Check if target is in [arr[left], arr[mid]] — if yes, search left. Else search right. O(log n) time."}
+    ]
+  },
+  depth:[
+    {trigger:"Used MySQL / PostgreSQL",q:"Why a relational DB for your use case? What would change if you used MongoDB instead?",flag:"Tests if the choice was deliberate vs default.",answer:"Good answer: identifies why relational fits — structured data with relationships, need for JOINs, ACID transactions. MongoDB tradeoff: flexible schema, horizontal scaling, no JOINs — better for unstructured/nested data. Red flag: 'I always use MySQL' or 'MongoDB is faster' without qualification."},
+    {trigger:"Built a REST API",q:"What's the difference between PUT and PATCH? Which did you use and why?",flag:"Most REST users have never thought about this.",answer:"PUT: replace the entire resource. PATCH: partial update — only send fields that changed. PUT is idempotent (same result if repeated). PATCH may or may not be idempotent. Most devs use PUT for everything or don't know the difference — knowing this distinction is a genuine green flag."},
+    {trigger:"Used React / Angular",q:"What is the virtual DOM? Why does React use it instead of updating the real DOM directly?",flag:"Can they explain the abstraction they relied on?",answer:"Virtual DOM: lightweight in-memory representation of the real DOM. When state changes, React creates a new virtual DOM, diffs it against the previous one (reconciliation), and updates only the changed real DOM nodes. Real DOM manipulation is expensive (triggers reflow/repaint)."},
+    {trigger:"Used Node.js",q:"Node.js is single-threaded — how does it handle concurrent requests without blocking?",flag:"Event loop understanding is a strong differentiator.",answer:"Node.js uses an event loop with non-blocking I/O. When a request needs I/O (DB query, file read), Node delegates to the OS and moves on. When the OS finishes, it queues a callback. The event loop picks up callbacks and executes them. One thread handles thousands of concurrent connections."},
+    {trigger:"Used Python / Django / Flask",q:"Python has the GIL — what is it and how does it affect multi-threaded Python programs?",flag:"MTech-level — skip for MCA unless they bring it up.",answer:"GIL (Global Interpreter Lock): a mutex in CPython that allows only one thread to execute Python bytecode at a time — even on multi-core CPUs. Python threads can't achieve true parallelism for CPU-bound tasks. Solutions: multiprocessing, or use C extensions that release the GIL (NumPy does this), or async/await for I/O-bound tasks."},
+    {trigger:"Used any cloud service (AWS/GCP/Azure)",q:"What's the difference between IaaS, PaaS, and SaaS? Where does the service you used fall?",flag:"Used cloud without understanding it is a yellow flag.",answer:"IaaS: raw VMs, storage, networking — you manage OS and above. e.g. AWS EC2. PaaS: managed runtime — you deploy code, provider manages infrastructure. e.g. Heroku, Firebase. SaaS: fully managed software. e.g. Gmail, Salesforce. Most student projects using AWS S3 or Firebase are using PaaS/SaaS without realising it."},
+    {trigger:"Implemented login / auth",q:"How did you store passwords? Why should you never store them as plain text?",flag:"Security basics — surprising how many get this wrong.",answer:"Never store plain text — if DB is breached, all passwords exposed. Should use a slow hashing algorithm with salt: bcrypt, Argon2, or scrypt. Regular hashes (MD5, SHA256) are too fast — attackers can brute-force billions per second. bcrypt is slow by design (configurable work factor). Green flag: mentions bcrypt specifically."},
+    {trigger:"Used Git",q:"What is the difference between git merge and git rebase? When would you use each?",flag:"Good differentiator — rebase understanding shows practical maturity.",answer:"Merge: creates a merge commit, preserves full history of both branches. Safe, non-destructive. Rebase: replays your commits on top of another branch — creates linear history, no merge commit. Never rebase shared/public branches. Use merge for: shared branches, preserving context. Use rebase for: cleaning up local commits before merging a feature branch."},
+    {trigger:"Used MongoDB",q:"When is a document database better than a relational one? Did your use case actually need MongoDB?",flag:"Many use MongoDB by default — check if the choice was intentional.",answer:"MongoDB suits: variable/nested data structures, high write throughput, horizontal scaling, no complex JOINs needed. RDBMS suits: complex relationships, ACID transactions, structured data. Most student CRUD apps would work equally well with MySQL — MongoDB is often chosen for familiarity, not necessity."},
+    {trigger:"Used Spring Boot / Java backend",q:"What is dependency injection? How does Spring Boot implement it?",flag:"IoC container understanding — tests if they understand what Spring is doing for them.",answer:"Dependency injection: instead of a class creating its own dependencies, they are provided (injected) from outside. Spring Boot: uses IoC container — annotate classes with @Component, @Service, @Repository. Spring creates and manages these as beans. @Autowired injects them where needed."},
+    {trigger:"Used Redis",q:"Why did you use Redis specifically? What would break if you replaced it with a regular database table?",flag:"In-memory speed vs persistence tradeoff — tests deliberate architecture choice.",answer:"Redis is in-memory — microsecond read/write vs millisecond for disk DB. Used for: caching, session storage, rate limiting, pub-sub, leaderboards. Replacing with a DB table: performance degrades under high load. Also: Redis has built-in TTL (expiry), atomic operations, and data structures (sets, sorted sets) that databases don't have natively."},
+    {trigger:"Built a mobile app (Android/Flutter)",q:"How did you manage state in your app? What problems did you face with state management?",flag:"State management is the hardest part of mobile dev — reveals real experience.",answer:"Good answer acknowledges the challenge. Flutter options: setState (simple, local), Provider/Riverpod (app-wide), BLoC (reactive). Android: ViewModel + LiveData/StateFlow. Red flag: 'I used setState everywhere' in a complex app — shows they didn't think about architecture."},
+    {trigger:"Used ML / AI models",q:"Did you train the model or use a pre-trained one? Why?",flag:"Many use APIs they call 'AI projects'. Distinguish usage from building.",answer:"Most student projects use pre-trained models or APIs. What matters: do they understand the distinction? Training: requires labelled data, GPU, time, ML knowledge. Pre-trained: transfer learning — fine-tune or use directly. Red flag: says 'I built an AI model' but actually called an API."},
+    {trigger:"Used Docker / Kubernetes",q:"What problem were you solving with Docker? Could you have solved it another way?",flag:"Container awareness — green flag if they explain the environment reproducibility benefit.",answer:"Docker solved environment inconsistency — 'works on my machine' problem. Alternative: virtual environments (Python venv), but that doesn't solve OS-level dependencies. Kubernetes adds orchestration: auto-scaling, rolling deployments, self-healing. For a student project, Docker alone is usually sufficient."},
+    {trigger:"Built a search feature",q:"How did you implement search — SQL LIKE, full-text search, or something else? What are the tradeoffs?",flag:"Search implementation choices reveal DB and performance awareness.",answer:"SQL LIKE '%keyword%': simple but slow — can't use indexes, scans entire table. Full-text search (MySQL FULLTEXT, Postgres tsvector): uses inverted index, much faster, handles stemming and ranking. Elasticsearch: even more powerful but adds infrastructure complexity."},
+    {trigger:"Used WebSockets / real-time features",q:"Why WebSockets over polling? What is long polling and when would you use it instead?",flag:"Real-time protocol tradeoffs — tests if they chose WebSockets deliberately.",answer:"Regular polling: client asks 'any updates?' every N seconds — wasteful, high latency. Long polling: client sends request, server holds it open until update available. Better than polling but still HTTP overhead per update. WebSockets: full-duplex persistent connection — server pushes instantly. Use long polling when WebSocket support is unavailable."}
+  ]
+};
+</script>
+<script>
+// ══════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════
+let activeTab = 'gd';
+let gdCandidates = [];
+let techCandidates = [];
+let gdScores = {};
+let techScores = {};
+let gdTopicIdx = 0;
+let showDevil = false;
+let showRank = false;
+let degree = 'MCA';
+let activePhase = 'warmup';
+let activeTopic = 0;
+let depthTrigger = 0;
+let askedQs = new Set();
+let idCtr = 1;
+
+// ══════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════
+window.onload = () => {
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('gd-date').value = today;
+  document.getElementById('tech-date').value = today;
+  addGDCandidate(); addGDCandidate(); addGDCandidate();
+  addTechCandidate();
+  renderTopicCard();
+  renderDevil();
+  renderGDCandidates();
+  renderCollegeTip();
+  renderPhase();
+  renderTechCandidates();
+  renderGuide();
+};
+
+// ══════════════════════════════════════════════════════════
+// TAB SWITCHING
+// ══════════════════════════════════════════════════════════
+function switchTab(tab) {
+  activeTab = tab;
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+
+// ══════════════════════════════════════════════════════════
+// GD FUNCTIONS
+// ══════════════════════════════════════════════════════════
+function onTopicChange() {
+  gdTopicIdx = parseInt(document.getElementById('gd-topic-select').value);
+  renderTopicCard();
+  if (showDevil) renderDevil();
+}
+
+function renderTopicCard() {
+  const topic = GD_TOPICS[gdTopicIdx];
+  const isGeneral = gdTopicIdx < 8;
+  const card = document.getElementById('gd-topic-card');
+  card.style.background = isGeneral ? 'linear-gradient(135deg,#0f172a,#1e1b4b)' : 'linear-gradient(135deg,#0f172a,#0c1a2e)';
+  card.style.border = `1px solid ${isGeneral ? '#312e81' : '#1e3a5f'}`;
+  card.innerHTML = `
+    <span style="font-size:20px">${isGeneral ? '💬' : '🖥️'}</span>
+    <div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;">
+        <div class="topic-label" style="color:${isGeneral ? '#818cf8' : '#38bdf8'}">Selected Topic</div>
+        <span style="background:${isGeneral ? '#1e1b4b' : '#0c2a3d'};border:1px solid ${isGeneral ? '#4338ca' : '#0369a1'};color:${isGeneral ? '#a5b4fc' : '#38bdf8'};border-radius:4px;padding:1px 7px;font-size:9px;font-family:var(--mono);font-weight:700;text-transform:uppercase;letter-spacing:1px;">${isGeneral ? 'General' : 'MCA / MTech'}</span>
+      </div>
+      <div class="topic-text" style="color:${isGeneral ? '#e0e7ff' : '#bfdbfe'}">${topic}</div>
+    </div>`;
+}
+
+function toggleDevil() {
+  showDevil = !showDevil;
+  const btn = document.getElementById('devil-toggle');
+  const panel = document.getElementById('devil-panel');
+  btn.style.background = showDevil ? '#431407' : 'transparent';
+  btn.style.borderColor = showDevil ? '#f97316' : '#44403c';
+  btn.style.color = showDevil ? '#fb923c' : '#a8a29e';
+  panel.style.display = showDevil ? 'block' : 'none';
+  if (showDevil) renderDevil();
+}
+
+function renderDevil() {
+  const data = DEVIL_CARDS.find(d => d.topic === gdTopicIdx);
+  const grid = document.getElementById('devil-cards-grid');
+  if (!data) { grid.innerHTML = '<div style="color:var(--faint);font-size:12px">No cards for this topic yet.</div>'; return; }
+  grid.innerHTML = data.cards.map((c, i) => {
+    const pro = c.pro;
+    return `<div class="devil-card">
+      <span class="devil-tag" style="background:${pro ? '#7f1d1d22' : '#14532d22'};border:1px solid ${pro ? '#7f1d1d' : '#14532d'};color:${pro ? '#fca5a5' : '#86efac'};">${pro ? 'If consensus is PRO' : 'If consensus is ANTI'}</span>
+      <div class="devil-when">When: ${c.when}</div>
+      <div class="devil-prompt">"${c.prompt}"</div>
+      <button class="copy-btn" onclick="copyPrompt(this, '${c.prompt.replace(/'/g,"\\'")}')">Copy prompt</button>
+    </div>`;
+  }).join('');
+}
+
+function copyPrompt(btn, text) {
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '✓ Copied';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy prompt'; btn.classList.remove('copied'); }, 1500);
+  });
+}
+
+function toggleRank() {
+  showRank = !showRank;
+  const btn = document.getElementById('rank-toggle');
+  const panel = document.getElementById('rank-panel');
+  btn.style.background = showRank ? '#1e3a5f' : 'transparent';
+  btn.style.borderColor = showRank ? '#3b82f6' : 'var(--border2)';
+  btn.style.color = showRank ? '#93c5fd' : 'var(--faint)';
+  btn.textContent = showRank ? '▾ Rankings' : '▸ Rankings';
+  panel.style.display = showRank ? 'block' : 'none';
+  if (showRank) renderRankings();
+}
+
+function renderRankings() {
+  const max = GD_PARAMS.length * 5;
+  const medals = ['🥇','🥈','🥉'];
+  const ranked = gdCandidates
+    .map(c => ({ ...c, total: GD_PARAMS.reduce((s,p) => s + ((gdScores[c.id] || {})[p.key] || 0), 0) }))
+    .filter(c => c.name.trim())
+    .sort((a,b) => b.total - a.total);
+  const list = document.getElementById('rank-list');
+  if (!ranked.length) { list.innerHTML = '<div style="color:var(--dim);font-size:12px;text-align:center;padding:14px">Add candidates and scores to see rankings</div>'; return; }
+  list.innerHTML = ranked.map((c, i) => {
+    const pct = Math.round((c.total / max) * 100);
+    const color = pct >= 80 ? '#22c55e' : pct >= 60 ? '#eab308' : '#f97316';
+    return `<div class="ranking-item">
+      <span style="font-size:16px;width:24px">${medals[i] || (i+1)+'.'}</span>
+      <span style="flex:1;color:var(--text);font-size:14px;font-weight:600">${c.name}</span>
+      <div class="rank-bar-wrap"><div class="rank-bar" style="width:${pct}%;background:${color}"></div></div>
+      <span style="color:${color};font-family:var(--mono);font-size:12px;min-width:40px;text-align:right">${c.total}/${max}</span>
+    </div>`;
+  }).join('');
+}
+
+function addGDCandidate() {
+  const id = idCtr++;
+  gdCandidates.push({id, name:'', notes:''});
+  gdScores[id] = {};
+  renderGDCandidates();
+}
+
+function removeGDCandidate(id) {
+  gdCandidates = gdCandidates.filter(c => c.id !== id);
+  delete gdScores[id];
+  renderGDCandidates();
+  if (showRank) renderRankings();
+}
+
+function setGDScore(id, param, val) {
+  if (!gdScores[id]) gdScores[id] = {};
+  const cur = gdScores[id][param];
+  gdScores[id][param] = (cur === val) ? 0 : val;
+  renderGDCandidates();
+  if (showRank) renderRankings();
+}
+
+function renderGDCandidates() {
+  const max = GD_PARAMS.length * 5;
+  const container = document.getElementById('gd-candidates');
+  container.innerHTML = gdCandidates.map((c, idx) => {
+    const total = GD_PARAMS.reduce((s,p) => s + ((gdScores[c.id] || {})[p.key] || 0), 0);
+    const pct = Math.round((total / max) * 100);
+    const rankColor = pct >= 80 ? '#22c55e' : pct >= 60 ? '#eab308' : pct >= 40 ? '#f97316' : '#ef4444';
+    const scoresHTML = GD_PARAMS.map(p => {
+      const cur = (gdScores[c.id] || {})[p.key] || 0;
+      const btns = [1,2,3,4,5].map(v => {
+        const sel = cur === v;
+        return `<button class="score-btn" onclick="setGDScore(${c.id},'${p.key}',${v})" style="background:${sel ? SCORE_COLORS[v] : 'var(--surface2)'};border-color:${sel ? '#fff' : 'transparent'};color:${sel ? '#fff' : 'var(--faint)'};transform:${sel ? 'scale(1.1)' : 'scale(1)'};">${v}</button>`;
+      }).join('');
+      const label = cur ? `<span style="color:${SCORE_COLORS[cur]};font-size:9px;font-family:var(--mono);margin-left:4px">${SCORE_LABELS[cur]}</span>` : '';
+      return `<div class="param-item"><label>${p.label}</label><div class="score-row">${btns}${label}</div></div>`;
+    }).join('');
+    return `<div class="cand-card">
+      <div class="cand-top">
+        <div class="cand-num">${idx+1}</div>
+        <input class="cand-name" placeholder="Candidate name..." value="${c.name}" oninput="updateGDName(${c.id},this.value)">
+        <div class="score-total">
+          <span class="score-num" style="color:${rankColor}">${total}</span>
+          <span class="score-max">/${max}</span>
+          <span class="score-pct" style="background:${rankColor}22;color:${rankColor}">${pct}%</span>
+        </div>
+        <button class="del-btn" onclick="removeGDCandidate(${c.id})">✕</button>
+      </div>
+      <div class="params-grid">${scoresHTML}</div>
+      <textarea class="cand-notes" rows="2" placeholder="Quick notes on this candidate..." oninput="updateGDNotes(${c.id},this.value)">${c.notes}</textarea>
+    </div>`;
+  }).join('');
+}
+
+function updateGDName(id, val) { const c = gdCandidates.find(x => x.id===id); if(c) c.name=val; }
+function updateGDNotes(id, val) { const c = gdCandidates.find(x => x.id===id); if(c) c.notes=val; }
+
+// ══════════════════════════════════════════════════════════
+// TECH FUNCTIONS
+// ══════════════════════════════════════════════════════════
+function setDegree(d) {
+  degree = d;
+  askedQs.clear();
+  document.getElementById('deg-mca').className = 'toggle-btn ' + (d==='MCA' ? 'active-mca' : '');
+  document.getElementById('deg-mtech').className = 'toggle-btn ' + (d==='MTech' ? 'active-mtech' : '');
+  renderPhase();
+}
+
+function onCollegeChange() { renderCollegeTip(); }
+
+function renderCollegeTip() {
+  const college = document.getElementById('college-select').value;
+  document.getElementById('college-tip-title').textContent = college + ' — Interviewer Note';
+  document.getElementById('college-tip-text').textContent = COLLEGE_NOTES[college];
+}
+
+function setPhase(phase) {
+  activePhase = phase;
+  activeTopic = 0;
+  depthTrigger = 0;
+  askedQs.clear();
+  document.querySelectorAll('#phase-tabs .subtab-btn').forEach((btn, i) => {
+    const phases = ['warmup','fundamentals','coding','depth','closing'];
+    btn.className = 'subtab-btn' + (phases[i]===phase ? (degree==='MCA' ? ' active-mca' : ' active-mtech') : '');
+  });
+  const labels = {warmup:'🌡️ Warm Up — Project Walkthrough',fundamentals:'📐 CS Fundamentals',coding:'💻 Problem Solving — Live Coding',depth:'🔬 Depth Probe — Follow Their Project',closing:'🎤 Their Questions — What They Ask Reveals a Lot'};
+  document.getElementById('phase-label').textContent = labels[phase];
+  renderPhase();
+}
+
+function toggleAsked(key) {
+  if (askedQs.has(key)) askedQs.delete(key); else askedQs.add(key);
+  renderPhase();
+}
+
+function toggleOpen(key) {
+  const body = document.getElementById('qbody-'+key);
+  const arrow = document.getElementById('qarrow-'+key);
+  if (!body) return;
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  if (arrow) arrow.textContent = isOpen ? '▼' : '▲';
+}
+
+function toggleAnswer(key) {
+  const box = document.getElementById('ans-'+key);
+  const btn = document.getElementById('ansbtn-'+key);
+  if (!box || !btn) return;
+  const isOpen = box.classList.contains('open');
+  box.classList.toggle('open', !isOpen);
+  btn.classList.toggle('open', !isOpen);
+  btn.innerHTML = isOpen ? '▸ Show Expected Answer' : '▾ Hide Answer';
+}
+
+function buildQCard(item, key, idx) {
+  const isAsked = askedQs.has(key);
+  return `<div class="q-card${isAsked ? ' asked' : ''}" id="qcard-${key}">
+    <div class="q-header" onclick="toggleOpen('${key}')">
+      <div class="q-num${isAsked ? ' asked' : ''}" onclick="event.stopPropagation();toggleAsked('${key}')" title="Mark as asked">${isAsked ? '✓' : idx+1}</div>
+      <div class="q-text">${item.q}</div>
+      <div class="q-arrow" id="qarrow-${key}">▼</div>
+    </div>
+    <div class="q-body" id="qbody-${key}">
+      <div style="margin-bottom:10px;">
+        <div class="q-label">Follow-up Probe</div>
+        <div class="q-probe">"${item.probe}"</div>
+      </div>
+      ${item.answer ? `<button class="show-answer-btn" id="ansbtn-${key}" onclick="toggleAnswer('${key}')">▸ Show Expected Answer</button>
+      <div class="answer-box" id="ans-${key}">
+        <div class="answer-label">✓ Expected Answer</div>
+        <div class="answer-text">${item.answer}</div>
+      </div>` : ''}
+      <div class="eval-note">
+        <div class="eval-note-label">Evaluator Note</div>
+        <div class="eval-note-text">${item.flag}</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function buildDivider(label) {
+  const color = degree === 'MCA' ? '#1d4ed8' : '#15803d';
+  return `<div class="level-divider">
+    <div class="divider-line" style="background:${color}"></div>
+    <div class="divider-label" style="background:${color}">↓ ${label}</div>
+    <div class="divider-line" style="background:${color}"></div>
+  </div>`;
+}
+
+function renderPhase() {
+  const panel = document.getElementById('questions-panel');
+  const degColor = degree === 'MCA' ? '#93c5fd' : '#86efac';
+  const degBg = degree === 'MCA' ? '#1e3a5f' : '#14532d';
+  const degBorder = degree === 'MCA' ? '#1d4ed8' : '#15803d';
+
+  if (activePhase === 'warmup') {
+    const items = TECH_Q.warmup;
+    panel.innerHTML = `<div style="color:var(--faint);font-size:10px;font-family:var(--mono);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;">Same for MCA & MTech — ${items.length} questions</div>` +
+      items.map((item, i) => buildQCard(item, 'w'+i, i)).join('');
+    return;
+  }
+
+  if (activePhase === 'fundamentals') {
+    const topics = TECH_Q.topics;
+    const topic = topics[activeTopic];
+    const degQs = degree === 'MCA' ? topic.mca : topic.mtech;
+    const allQs = [...topic.safe, ...degQs];
+
+    const tabsHTML = topics.map((t, i) => {
+      const tDegQs = degree === 'MCA' ? t.mca : t.mtech;
+      const count = t.safe.length + tDegQs.length;
+      const isActive = i === activeTopic;
+      return `<button class="subtab-btn ${isActive ? (degree==='MCA'?'active-mca':'active-mtech') : ''}" onclick="setSubtopic(${i})">
+        ${t.icon} ${t.name} <span class="subtab-count">${count}</span>
+      </button>`;
+    }).join('');
+
+    const badgesHTML = `<div class="badge-row">
+      <span class="badge" style="background:var(--surface2);border:1px solid var(--border2);color:var(--faint);">✅ Safe: ${topic.safe.length}</span>
+      <span class="badge" style="background:${degBg}44;border:1px solid ${degBorder};color:${degColor};">🎓 ${degree}: ${degQs.length}</span>
+      <span class="badge" style="background:var(--surface2);border:1px solid var(--border2);color:var(--faint);">Total: ${allQs.length}</span>
+    </div>`;
+
+    const qsHTML = allQs.map((item, i) => {
+      const key = `f${activeTopic}_${degree}_${i}`;
+      const divider = (i === topic.safe.length) ? buildDivider(`${degree}-level questions (${degQs.length})`) : '';
+      return divider + buildQCard(item, key, i);
+    }).join('');
+
+    panel.innerHTML = `<div class="subtab-row">${tabsHTML}</div>${badgesHTML}${qsHTML}`;
+    return;
+  }
+
+  if (activePhase === 'coding') {
+    const degQs = degree === 'MCA' ? TECH_Q.coding.mca : TECH_Q.coding.mtech;
+    const warmupHTML = `<div style="background:#1c1917;border:1px solid #292524;border-radius:8px;padding:10px 14px;margin-bottom:14px;">
+      <div style="color:#78716c;font-size:9px;font-family:var(--mono);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;">Warm-up (${TECH_Q.coding.warmup.length}) — use if candidate seems nervous</div>
+      ${TECH_Q.coding.warmup.map((item, i) => buildQCard(item, 'cw'+i, i)).join('')}
+    </div>`;
+    const degLabel = `<div style="color:${degColor};font-size:10px;font-family:var(--mono);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;">🎓 ${degree}-level problems — ${degQs.length} questions</div>`;
+    const degQsHTML = degQs.map((item, i) => buildQCard(item, `c${degree}${i}`, i)).join('');
+    panel.innerHTML = warmupHTML + degLabel + degQsHTML;
+    return;
+  }
+
+  if (activePhase === 'depth') {
+    const triggers = TECH_Q.depth;
+    const trigBtns = triggers.map((t, i) =>
+      `<button class="trigger-btn${i===depthTrigger?' active':''}" onclick="setDepthTrigger(${i})">${t.trigger}</button>`
+    ).join('');
+    const cur = triggers[depthTrigger];
+    const card = buildQCard({q:cur.q, probe:"Keep asking 'why' until they can't go further. That's the actual depth.", flag:cur.flag, answer:cur.answer}, 'depth_'+depthTrigger, 0);
+    panel.innerHTML = `<div style="color:var(--faint);font-size:11px;margin-bottom:12px;line-height:1.6;">Pick the trigger that matches what the candidate mentioned in their project.</div>
+      <div style="display:flex;flex-wrap:wrap;margin-bottom:14px;">${trigBtns}</div>${card}`;
+    return;
+  }
+
+  if (activePhase === 'closing') {
+    const signals = [
+      {type:'🟢 Green Flag',color:'#86efac',bg:'#052e16',items:['Asks about the tech stack the team uses','Asks what a typical first 30 days looks like','Asks about code review culture or deployment process','Asks what problems the team is currently solving','Asks about mentorship or learning opportunities','Asks about the biggest technical challenge the team has faced recently']},
+      {type:'🟡 Neutral',color:'#fde68a',bg:'#1c1007',items:['Asks about work timings or WFH policy','Asks about salary progression','Asks about team size','Asks about training programs']},
+      {type:'🔴 Red Flag',color:'#fca5a5',bg:'#1c0505',items:['Has no questions at all','Only asks about leaves, holidays, or early exit','Asks questions already answered in the JD they clearly didn\'t read','Only asks about appraisal cycles before even starting']}
+    ];
+    panel.innerHTML = `<div style="color:var(--faint);font-size:11px;margin-bottom:14px;line-height:1.6;">Say: <em style="color:var(--muted)">"That's all from my side — do you have any questions for me?"</em> then observe.</div>` +
+      signals.map(s => `<div class="flag-box" style="background:${s.bg};border:1px solid ${s.color}44;">
+        <div class="flag-title" style="color:${s.color}">${s.type}</div>
+        ${s.items.map(item => `<div class="flag-item" style="color:${s.color}">${item}</div>`).join('')}
+      </div>`).join('');
+    return;
+  }
+}
+
+function setSubtopic(i) {
+  activeTopic = i;
+  askedQs.clear();
+  renderPhase();
+}
+
+function setDepthTrigger(i) {
+  depthTrigger = i;
+  renderPhase();
+}
+
+// Tech candidates
+function addTechCandidate() {
+  const id = idCtr++;
+  techCandidates.push({id, name:'', college:'', degree:'MCA', notes:''});
+  techScores[id] = {};
+  renderTechCandidates();
+}
+
+function removeTechCandidate(id) {
+  techCandidates = techCandidates.filter(c => c.id !== id);
+  delete techScores[id];
+  renderTechCandidates();
+}
+
+function setTechScore(id, param, val) {
+  if (!techScores[id]) techScores[id] = {};
+  const cur = techScores[id][param];
+  techScores[id][param] = (cur === val) ? 0 : val;
+  renderTechCandidates();
+}
+
+function renderTechCandidates() {
+  const max = TECH_PARAMS.length * 5;
+  const container = document.getElementById('tech-candidates');
+  container.innerHTML = techCandidates.map((c, idx) => {
+    const total = TECH_PARAMS.reduce((s,p) => s + ((techScores[c.id] || {})[p.key] || 0), 0);
+    const pct = Math.round((total / max) * 100);
+    const rankColor = pct >= 80 ? '#22c55e' : pct >= 60 ? '#eab308' : pct >= 40 ? '#f97316' : '#ef4444';
+    const scoresHTML = TECH_PARAMS.map(p => {
+      const cur = (techScores[c.id] || {})[p.key] || 0;
+      const btns = [1,2,3,4,5].map(v => {
+        const sel = cur === v;
+        return `<button class="score-btn" onclick="setTechScore(${c.id},'${p.key}',${v})" style="background:${sel ? SCORE_COLORS[v] : 'var(--surface2)'};border-color:${sel ? '#fff' : 'transparent'};color:${sel ? '#fff' : 'var(--faint)'};transform:${sel ? 'scale(1.1)' : 'scale(1)'};">${v}</button>`;
+      }).join('');
+      const label = cur ? `<span style="color:${SCORE_COLORS[cur]};font-size:9px;font-family:var(--mono);margin-left:4px">${SCORE_LABELS[cur]}</span>` : '';
+      return `<div class="param-item"><label>${p.label}</label><div class="score-row">${btns}${label}</div></div>`;
+    }).join('');
+    const degreeToggle = ['MCA','MTech'].map(d => `<button onclick="updateTechCandDeg(${c.id},'${d}')" style="background:${c.degree===d ? (d==='MCA'?'var(--blue-bg)':'var(--green-bg)') : 'transparent'};border:none;border-radius:4px;color:${c.degree===d ? (d==='MCA'?'var(--blue-dim)':'var(--green-dim)') : 'var(--faint)'};font-family:var(--mono);font-weight:700;font-size:10px;padding:3px 10px;cursor:pointer;">${d}</button>`).join('');
+    return `<div class="cand-card">
+      <div class="cand-top">
+        <div class="cand-num">${idx+1}</div>
+        <input class="cand-name" placeholder="Candidate name..." value="${c.name}" oninput="updateTechName(${c.id},this.value)">
+        <select class="styled" style="font-size:11px;padding:4px 8px;" onchange="updateTechCollege(${c.id},this.value)">
+          <option value="">College...</option>
+          ${['PES University','MS Ramaiah','Jain University','BNMIT'].map(col => `<option${c.college===col?' selected':''}>${col}</option>`).join('')}
+        </select>
+        <div style="display:flex;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:2px;">${degreeToggle}</div>
+        <div class="score-total">
+          <span class="score-num" style="color:${rankColor}">${total}</span>
+          <span class="score-max">/${max}</span>
+          <span class="score-pct" style="background:${rankColor}22;color:${rankColor}">${pct}%</span>
+        </div>
+        <button class="del-btn" onclick="removeTechCandidate(${c.id})">✕</button>
+      </div>
+      <div class="params-grid">${scoresHTML}</div>
+      <textarea class="cand-notes" rows="2" placeholder="Interview notes — key moments, red flags, green flags..." oninput="updateTechNotes(${c.id},this.value)">${c.notes}</textarea>
+    </div>`;
+  }).join('');
+}
+
+function updateTechName(id, val) { const c = techCandidates.find(x => x.id===id); if(c) c.name=val; }
+function updateTechNotes(id, val) { const c = techCandidates.find(x => x.id===id); if(c) c.notes=val; }
+function updateTechCollege(id, val) { const c = techCandidates.find(x => x.id===id); if(c) { c.college=val; renderTechCandidates(); }}
+function updateTechCandDeg(id, val) { const c = techCandidates.find(x => x.id===id); if(c) { c.degree=val; renderTechCandidates(); }}
+
+// ══════════════════════════════════════════════════════════
+// EXPORT CSV
+// ══════════════════════════════════════════════════════════
+function exportCSV() {
+  if (activeTab === 'gd') {
+    const max = GD_PARAMS.length * 5;
+    const rows = [['Rank','Name',...GD_PARAMS.map(p=>p.label),'Total','%','Notes']];
+    const ranked = gdCandidates.map(c => ({...c, total: GD_PARAMS.reduce((s,p) => s+((gdScores[c.id]||{})[p.key]||0), 0)}))
+      .filter(c => c.name.trim()).sort((a,b) => b.total-a.total);
+    ranked.forEach((c,i) => {
+      const pct = Math.round((c.total/max)*100);
+      rows.push([i+1, c.name, ...GD_PARAMS.map(p=>(gdScores[c.id]||{})[p.key]||0), c.total, pct+'%', c.notes||'']);
+    });
+    downloadCSV(rows, 'GD_Evaluation_' + document.getElementById('gd-date').value);
+  } else if (activeTab === 'tech') {
+    const max = TECH_PARAMS.length * 5;
+    const rows = [['Rank','Name','College','Degree',...TECH_PARAMS.map(p=>p.label),'Total','%','Notes']];
+    const ranked = techCandidates.map(c => ({...c, total: TECH_PARAMS.reduce((s,p) => s+((techScores[c.id]||{})[p.key]||0), 0)}))
+      .filter(c => c.name.trim()).sort((a,b) => b.total-a.total);
+    ranked.forEach((c,i) => {
+      const pct = Math.round((c.total/max)*100);
+      rows.push([i+1, c.name, c.college, c.degree, ...TECH_PARAMS.map(p=>(techScores[c.id]||{})[p.key]||0), c.total, pct+'%', c.notes||'']);
+    });
+    downloadCSV(rows, 'Tech_Interview_' + document.getElementById('tech-date').value);
+  }
+}
+
+function downloadCSV(rows, filename) {
+  const csv = rows.map(r => r.map(v => `"${v}"`).join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename + '.csv'; a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ══════════════════════════════════════════════════════════
+// GUIDE
+// ══════════════════════════════════════════════════════════
+function renderGuide() {
+  const container = document.getElementById('guide-content');
+  container.innerHTML = `
+  <!-- Interview Structure -->
+  <div class="section-card">
+    <div class="section-title"><span>🗓️</span><span class="section-title-text" style="color:var(--purple)">Interview Structure</span></div>
+    ${[
+      {phase:'Warm Up',time:'5 min',what:"Project walkthrough — let them speak first. You observe and build rapport.",tip:"Don't evaluate yet — map their confidence level and communication baseline."},
+      {phase:'CS Fundamentals',time:'15 min',what:"OOP, DBMS, OS, CN, DSA, SWE, AI Usage — pick 2–3 topics based on their project stack.",tip:"Start with Safe questions. If they answer well, cross the divider into MCA/MTech level."},
+      {phase:'Problem Solving',time:'15 min',what:"One coding problem. Let them think out loud. Use warmup if nervous.",tip:"Score the approach, not just the solution. A wrong answer with good reasoning beats a right answer with no explanation."},
+      {phase:'Depth Probe',time:'7 min',what:"Pick one technology from their project. Go one layer deeper than they expect.",tip:"Ask 'why' three times in a row. Where they stop is their actual depth."},
+      {phase:'Their Questions',time:'3 min',what:"Invite their questions. Observe what they ask — or don't ask.",tip:"What they ask reveals ambition, preparation, and what they actually care about."},
+    ].map((p,i,arr) => `<div class="guide-row">
+      <div style="min-width:120px;flex-shrink:0;"><div style="color:var(--text);font-size:12px;font-weight:700">${p.phase}</div><div style="color:var(--purple);font-size:10px;font-family:var(--mono);margin-top:2px">${p.time}</div></div>
+      <div><div style="color:var(--muted);font-size:12px;line-height:1.5;margin-bottom:4px">${p.what}</div><div style="color:var(--faint);font-size:11px;font-style:italic">💡 ${p.tip}</div></div>
+    </div>`).join('')}
+  </div>
+
+  <!-- MCA vs MTech -->
+  <div class="section-card">
+    <div class="section-title"><span>🎓</span><span class="section-title-text" style="color:var(--cyan)">MCA vs MTech — What to Expect</span></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+      ${[
+        {degree:'MCA',color:'#3b82f6',bg:'#1e3a5f',points:['BCA/BSc background — 3yr UG + 2yr PG','Application-oriented, broader coverage','Strong in web dev, databases, Java/Python','Expect good project experience','Avoid: hardcore systems, compiler design','Test: practical application of concepts']},
+        {degree:'MTech',color:'#22c55e',bg:'#14532d',points:['BTech/BE background — 4yr eng + 2yr PG','Deeper theory, research-oriented','Strong in algorithms, OS, systems','Expect better DSA and complexity analysis','Avoid: basic syntax-level questions (insulting)','Test: WHY behind concepts, not just WHAT']},
+      ].map(d => `<div style="background:var(--bg);border:1px solid ${d.color}33;border-radius:10px;padding:14px;">
+        <div style="color:${d.color};font-size:12px;font-family:var(--mono);font-weight:700;margin-bottom:8px">${d.degree}</div>
+        ${d.points.map(p => `<div style="color:var(--faint);font-size:11px;padding:2px 0;line-height:1.5">• ${p}</div>`).join('')}
+      </div>`).join('')}
+    </div>
+    <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 14px;">
+      <div style="color:#f59e0b;font-size:10px;font-family:var(--mono);font-weight:700;margin-bottom:4px">⚠️ KEY DIFFERENCE IN PRACTICE</div>
+      <div style="color:var(--muted);font-size:12px;line-height:1.6">MCA candidates often have stronger project portfolios but thinner theory. MTech candidates often have stronger theory but less real-world project experience. Weight project depth heavily for MCA, algorithmic depth for MTech.</div>
+    </div>
+  </div>
+
+  <!-- College Guide -->
+  <div class="section-card">
+    <div class="section-title"><span>🏫</span><span class="section-title-text" style="color:#a78bfa">College-Specific Approach</span></div>
+    ${[
+      {name:'PES University',tier:'Tier 1',color:'#6366f1',approach:'Strong DSA fundamentals — go straight to medium-hard problems. Push on complexity analysis. They are used to being challenged.',watch:'Sometimes over-confident — probe for real understanding vs rehearsed answers. Ask them to prove their complexity claims.',avoid:'Easy warmup questions — they will interpret it as a low bar and disengage.'},
+      {name:'MS Ramaiah',tier:'Tier 1',color:'#6366f1',approach:'Good systems understanding, especially MTech. Go deep on OS and DBMS. Probe on networking and concurrency.',watch:'MCA batch is more variable than MTech. Start at safe level for MCA, MTech can jump to harder questions early.',avoid:"Assuming consistent quality across MCA and MTech — the gap is wider here than at PES."},
+      {name:'Jain University',tier:'Tier 2',color:'#f59e0b',approach:"Start at Safe level for every topic. Let them earn harder questions. Focus on project depth — they often have interesting projects.",watch:"High rate of mugged-up definitions — always ask for a real-world example immediately after any definition.",avoid:"Jumping to MTech-level theory questions early — you will get blank stares and the candidate will lose confidence."},
+      {name:'BNMIT',tier:'Tier 2',color:'#f59e0b',approach:"Same as Jain — start safe, probe project depth first. Communication quality varies widely — be patient.",watch:"Watch for candidates who compensate for weak theory with strong project work — these can be excellent hires with the right training.",avoid:"Dismissing candidates who stumble on theory — check if their project reasoning is sound before deciding."},
+    ].map(c => `<div style="background:var(--bg);border:1px solid ${c.color}33;border-radius:10px;padding:14px;margin-bottom:10px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <div style="color:${c.color};font-size:13px;font-weight:700">${c.name}</div>
+        <span style="background:${c.color}22;color:${c.color};border-radius:4px;padding:1px 7px;font-size:9px;font-family:var(--mono);font-weight:700">${c.tier}</span>
+      </div>
+      <div class="guide-row"><div style="min-width:90px;flex-shrink:0;color:var(--faint);font-size:12px;font-family:var(--mono)">Approach</div><div style="color:var(--muted);font-size:12px;line-height:1.5">${c.approach}</div></div>
+      <div class="guide-row"><div style="min-width:90px;flex-shrink:0;color:var(--faint);font-size:12px;font-family:var(--mono)">Watch for</div><div style="color:var(--muted);font-size:12px;line-height:1.5">${c.watch}</div></div>
+      <div class="guide-row" style="border-bottom:none"><div style="min-width:90px;flex-shrink:0;color:var(--faint);font-size:12px;font-family:var(--mono)">Avoid</div><div style="color:var(--muted);font-size:12px;line-height:1.5">${c.avoid}</div></div>
+    </div>`).join('')}
+  </div>
+
+  <!-- AI Usage Evaluation -->
+  <div class="section-card">
+    <div class="section-title"><span>🤖</span><span class="section-title-text" style="color:var(--pink)">Evaluating AI Usage</span></div>
+    <div style="color:var(--faint);font-size:12px;line-height:1.6;margin-bottom:14px;">Every 2025 fresher uses AI tools. The question is not whether they use AI — it's <strong style="color:var(--text)">how intelligently</strong> they use it. You are hiring the person, not their AI subscription.</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin-bottom:14px;">
+      ${[
+        {label:'Tool User 🔴',color:'#ef4444',desc:"Pastes problems directly, accepts output without reading, cannot explain what the code does, never verified AI was wrong."},
+        {label:'Assisted Developer 🟡',color:'#f59e0b',desc:"Uses AI for boilerplate and debugging, reads output before using, sometimes verifies, can explain most of what AI wrote."},
+        {label:'AI-Augmented Engineer 🟢',color:'#22c55e',desc:"Uses AI as a thinking partner, verifies output rigorously, knows when NOT to use it, builds better skills by understanding AI explanations."},
+      ].map(t => `<div style="background:var(--bg);border:1px solid ${t.color}44;border-radius:8px;padding:12px;">
+        <div style="color:${t.color};font-size:11px;font-family:var(--mono);font-weight:700;margin-bottom:6px">${t.label}</div>
+        <div style="color:var(--faint);font-size:11px;line-height:1.5">${t.desc}</div>
+      </div>`).join('')}
+    </div>
+    <div style="color:var(--pink);font-size:10px;font-family:var(--mono);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">Key Questions to Distinguish the Three</div>
+    ${[
+      {q:'"Walk me through a specific moment where you used AI in your project."',why:"Forces specificity — vague answers reveal passive usage."},
+      {q:'"Has AI ever given you wrong code? What happened?"',why:"Every real AI user has a story. 'No, never' is a red flag."},
+      {q:'"Can you explain this function line by line?" (point to AI-generated code in their project)',why:"The ultimate test — if they can't explain their own code, they didn't understand it."},
+      {q:'"When would you NOT use AI for a task?"',why:"Tests judgment. No answer or 'I always use it' is a red flag."},
+    ].map(item => `<div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:8px;">
+      <div style="color:#f9a8d4;font-size:12px;font-style:italic;margin-bottom:4px">${item.q}</div>
+      <div style="color:var(--faint);font-size:11px">→ ${item.why}</div>
+    </div>`).join('')}
+    <div class="flag-box" style="background:#052e16;border:1px solid #166534"><div class="flag-title" style="color:#4ade80">🟢 Green Flags</div>${['Honest about using AI, specific about how and when','Can explain AI-generated code line by line','Has a story of AI being wrong and catching it','Knows when NOT to use AI (security, core logic, learning)','Uses AI to learn — reads explanations, not just outputs'].map(i=>`<div class="flag-item" style="color:#86efac">• ${i}</div>`).join('')}</div>
+    <div class="flag-box" style="background:#1c0505;border:1px solid #7f1d1d"><div class="flag-title" style="color:#f87171">🔴 Red Flags</div>${['Cannot explain code from their own project','Claims AI never makes mistakes','Uses AI for everything including understanding basics',"'I don't use AI at all' — almost certainly not true for a 2025 graduate",'Gets defensive when asked to explain AI output'].map(i=>`<div class="flag-item" style="color:#fca5a5">• ${i}</div>`).join('')}</div>
+  </div>
+
+  <!-- Universal Signals -->
+  <div class="section-card">
+    <div class="section-title"><span>🚦</span><span class="section-title-text" style="color:#34d399">Universal Interview Signals</span></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+      <div class="flag-box" style="background:#052e16;border:1px solid #166534"><div class="flag-title" style="color:#4ade80">🟢 Green Flags</div>${["Says 'I'm not sure but I think...' and reasons through it","Catches their own mistake mid-answer and corrects","Asks clarifying questions before solving a coding problem","Can give a real-world example for every concept","Explains tradeoffs, not just the correct answer","Has a personal project not assigned by college","Asks insightful questions at the end"].map(i=>`<div class="flag-item" style="color:#86efac">• ${i}</div>`).join('')}</div>
+      <div class="flag-box" style="background:#1c0505;border:1px solid #7f1d1d"><div class="flag-title" style="color:#f87171">🔴 Red Flags</div>${["Recites definitions without being able to apply them","Gets defensive or shuts down when asked 'why'","Cannot explain their own project architecture after 2 questions","Says 'I know Java' but can't write a basic class","Looks to interviewer for validation after every sentence","Answers a different (easier) question than the one asked","Has no questions at the end of the interview"].map(i=>`<div class="flag-item" style="color:#fca5a5">• ${i}</div>`).join('')}</div>
+    </div>
+    <div class="flag-box" style="background:#1c1007;border:1px solid #713f12"><div class="flag-title" style="color:#fbbf24">🟡 Yellow Flags (Coachable)</div>${["Strong on theory, weak on practical application — coachable, worth exploring","Nervous but reasoning is sound — give them a moment to settle","Interesting project but can't explain it technically — probe further before deciding","Knows the answer but communicates poorly — separate communication from knowledge in your score"].map(i=>`<div class="flag-item" style="color:#fde68a">• ${i}</div>`).join('')}</div>
+  </div>
+
+  <!-- Depth Probe Guide -->
+  <div class="section-card">
+    <div class="section-title"><span>🔬</span><span class="section-title-text" style="color:var(--orange)">How to Use the Depth Probe</span></div>
+    <div style="color:var(--muted);font-size:12px;line-height:1.7;margin-bottom:14px;">Pick one technology the candidate mentioned and ask why they used it — then keep asking why.</div>
+    ${[
+      {step:'01',title:'Pick their technology',desc:"Choose something they mentioned confidently — MySQL, React, Node.js, Redis. Don't pick something obscure."},
+      {step:'02',title:'Ask one layer deeper',desc:"They said 'I used MySQL' → 'Why MySQL and not MongoDB for your use case?' Forces deliberate vs default thinking."},
+      {step:'03',title:'Keep asking why',desc:"Whatever they answer, ask why again. Do this 3 times. Where they stop is their actual depth. Most candidates exhaust at layer 2."},
+      {step:'04',title:"Probe the alternative",desc:"'What would you use if MySQL wasn't available?' Forces them to know the landscape, not just their choice."},
+      {step:'05',title:'Probe what could go wrong',desc:"'What's the biggest risk with your current approach?' Strong candidates have thought about failure modes."},
+    ].map((s,i,arr) => `<div class="guide-row" style="${i===arr.length-1?'border-bottom:none':''}">
+      <div class="guide-step-num">${s.step}</div>
+      <div><div style="color:var(--text);font-size:12px;font-weight:700;margin-bottom:3px">${s.title}</div><div style="color:var(--faint);font-size:12px;line-height:1.5">${s.desc}</div></div>
+    </div>`).join('')}
+  </div>
+
+  <!-- Scoring Guide -->
+  <div class="section-card">
+    <div class="section-title"><span>📊</span><span class="section-title-text" style="color:var(--muted)">How to Score</span></div>
+    ${[
+      {param:'Problem Solving',weight:'High',desc:"How they approach an unknown problem — do they break it down, ask clarifying questions, think out loud? A wrong answer with great reasoning scores higher than a right answer with no explanation."},
+      {param:'CS Fundamentals',weight:'High',desc:"Depth over breadth. One concept truly understood beats five memorised definitions. Probe the 'why' after every answer."},
+      {param:'Communication',weight:'Medium',desc:"Can they explain a technical concept to a non-expert? Separate communication score from knowledge score — a brilliant candidate who communicates poorly is still valuable."},
+      {param:'Learnability',weight:'High',desc:"Personal projects beyond curriculum, curiosity in their questions, ability to reason about things they haven't studied. The single best predictor of long-term performance."},
+      {param:'Attitude',weight:'Medium',desc:"How they handle being stuck, being corrected, and acknowledging gaps. Self-awareness and intellectual honesty matter more than confidence."},
+    ].map((p,i,arr) => `<div class="guide-row" style="${i===arr.length-1?'border-bottom:none':''}">
+      <div style="min-width:150px;flex-shrink:0;">
+        <div style="color:var(--text);font-size:12px;font-weight:600;margin-bottom:3px">${p.param}</div>
+        <span style="background:${p.weight==='High'?'var(--green-bg)':'var(--surface2)'};color:${p.weight==='High'?'var(--green-dim)':'var(--faint)'};border-radius:4px;padding:1px 7px;font-size:9px;font-family:var(--mono)">${p.weight} weight</span>
+      </div>
+      <div style="color:var(--faint);font-size:12px;line-height:1.5">${p.desc}</div>
+    </div>`).join('')}
+    <div style="margin-top:14px;background:var(--bg);border:1px solid #166534;border-radius:8px;padding:10px 14px;">
+      <div style="color:#4ade80;font-size:10px;font-family:var(--mono);font-weight:700;margin-bottom:8px">SCORING RULE OF THUMB</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        ${[['20–25','#22c55e','Strong hire'],['15–19','#84cc16','Hire with training'],['10–14','#eab308','Maybe — probe more'],['5–9','#f97316','Weak — specific gap'],['<5','#ef4444','Pass']].map(([range,color,label]) => `<div style="background:${color}15;border:1px solid ${color};border-radius:6px;padding:4px 10px;text-align:center;">
+          <div style="color:${color};font-size:12px;font-family:var(--mono);font-weight:700">${range}</div>
+          <div style="color:var(--faint);font-size:10px">${label}</div>
+        </div>`).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+</script>
+</body>
+</html>
